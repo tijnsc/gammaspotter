@@ -41,7 +41,7 @@ def graph(path: Path, peaks: bool):
     )
 
     if peaks:
-        peaks_df = AnalyzeData.find_gamma_peaks(df=data)
+        peaks_df = AnalyzeData.find_gamma_peaks(data=data, width=[3, 7], prominence=300)
         peaks_df.plot(
             ax=ax,
             x="x_peaks",
