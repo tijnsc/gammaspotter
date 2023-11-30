@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-from gammaspotter.models.model import CalibrateData, AnalyzeData
+from gammaspotter.process_data import CalibrateData, AnalyzeData
 
 
 @click.group()

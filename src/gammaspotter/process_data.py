@@ -6,18 +6,29 @@ class CalibrateData:
     def __init__(self) -> None:
         pass
 
+    def calibrate(self):
+        pass
+
 
 class AnalyzeData:
     def __init__(self) -> None:
         pass
 
     def find_gamma_peaks(df: pd.DataFrame) -> pd.DataFrame:
-        y = df["counts_ch_A"]
-        peaks, _ = find_peaks(y, prominence=90)
+        """Detect peaks in the gamma spectrum and return their positions in the graph.
+
+        Args:
+            df (pd.DataFrame): the DataFrame containing the spectrum data that should be analyzed
+
+        Returns:
+            pd.DataFrame: the x and y coordinates of the detected peaks
+        """
+        y = df.iloc[:, 1]
+        peaks, _ = find_peaks(y, )
         peak_positions = df.index[peaks]
 
-        x_peaks = df["pulseheight"][peak_positions]
-        y_peaks = df["counts_ch_A"][peak_positions]
+        x_peaks = df.iloc[:, 0][peak_positions]
+        y_peaks = df.iloc[:, 1][peak_positions]
 
         peaks_df = pd.DataFrame(
             {

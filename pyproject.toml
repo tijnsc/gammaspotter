@@ -22,4 +22,4 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-gammaspotter = "gammaspotter.views.cli:cmd_group"
+gammaspotter = "gammaspotter.cli:cmd_group"
