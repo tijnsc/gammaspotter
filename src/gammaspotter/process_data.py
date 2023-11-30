@@ -3,6 +3,8 @@ from scipy.signal import find_peaks
 from lmfit import models
 from gammaspotter.fit_models import FitModels
 
+import matplotlib.pyplot as plt
+
 
 class ProcessData:
     def __init__(self, data: pd.DataFrame) -> None:
@@ -41,20 +43,20 @@ class ProcessData:
 
         return peaks_data
 
-    def isolate_peaks(self, width: float = 10) -> list[pd.DataFrame]:
-        """Creates subset dataframes from the input data which contain a domain of set width around peaks in the spectrum.
+    def isolate_domains(
+        self, centers: list[float], width: float = 10
+    ) -> list[pd.DataFrame]:
+        """Creates subset dataframes from the input data which contain a domain of given width around specified center values, useful for isolating peaks in spectra.
 
         Args:
+            centers (list[float]): x-values around which the domains should be generated
             width (float, optional): width of the generated DataFrames. Defaults to 10.
 
         Returns:
             list[pd.DataFrame]: list containing generated DataFrames
         """
-        peak_positions = self.find_gamma_peaks(width=[3, 7], prominence=300)
-
         domains = []
-        for _, row in peak_positions.iterrows():
-            x = row["x_peaks"]
+        for x in centers:
             upper_bound = x + width / 2
             lower_bound = x - width / 2
             domain = self.data[
@@ -65,13 +67,35 @@ class ProcessData:
 
         return domains
 
-    def fit_data(self, model, x, y, **kwargs):
-        lmfit_model = models.Model(model)
-        result = lmfit_model.fit(y, x=x, kwargs=kwargs)
-        print(result.fit_report())
+    def fit_gauss(self, amp, cen, wid, startheight):
+        gmodel = FitModels.gaussian
+        lmfit_model = models.Model(gmodel)
+        x = self.data.iloc[:, 0]
+        y = self.data.iloc[:, 1]
+        result = lmfit_model.fit(
+            y, x=x, amp=amp, cen=cen, wid=wid, startheight=startheight
+        )
         return result
 
 
 if __name__ == "__main__":
-    data = pd.read_csv("data/Cs-137 1200s 100mV.csv")
+    data = pd.read_csv("data/Na-22 2400s HPG.csv")
     data_processing = ProcessData(data=data)
+
+    # result = data_processing.fit_gauss(amp=10, cen=10, wid=10, startheight=10)
+    # result.params.pretty_print()
+
+    centers = data_processing.find_gamma_peaks([3, 6], 200)
+    centers_x = centers.iloc[:, 0]
+    centers_y = centers.iloc[:, 1]
+    domains = data_processing.isolate_domains(centers=centers_x)
+
+    for index, domain in enumerate(domains):
+        data_processing.fit_gauss(
+            amp=centers_y.values[index],
+            cen=centers_x.values[index],
+            wid=10,
+            startheight=10,
+        )
+
+    plt.show()
