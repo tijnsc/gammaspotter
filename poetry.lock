@@ -504,6 +504,17 @@ test = ["hypothesis (>=6.46.1)", "pytest (>=7.3.2)", "pytest-xdist (>=2.2.0)"]
 xml = ["lxml (>=4.8.0)"]
 
 [[package]]
+name = "pathlib"
+version = "1.0.1"
+description = "Object-oriented filesystem paths"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pathlib-1.0.1-py3-none-any.whl", hash = "sha256:f35f95ab8b0f59e6d354090350b44a80a80635d22efdedfa84c7ad1cf0a74147"},
+    {file = "pathlib-1.0.1.tar.gz", hash = "sha256:6940718dfc3eff4258203ad5021090933e5c04707d5ca8cc9e73c94a7894ea9f"},
+]
+
+[[package]]
 name = "pillow"
 version = "10.1.0"
 description = "Python Imaging Library (Fork)"
@@ -696,4 +707,4 @@ tests = ["nose", "numpy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "dbb3940b948fde280856cc8e0b12f033c5186e4413cdd905660e1ff5c1c10b3e"
+content-hash = "ba8f1573caf517c3c2cd271ec025fb5875b8992e5d0e6a2f9cdca835939579cf"
