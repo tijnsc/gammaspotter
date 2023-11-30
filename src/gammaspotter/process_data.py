@@ -24,7 +24,7 @@ class AnalyzeData:
             pd.DataFrame: the x and y coordinates of the detected peaks
         """
         y = df.iloc[:, 1]
-        peaks, _ = find_peaks(y, )
+        peaks, _ = find_peaks(y, width=[3, 7], prominence=300)
         peak_positions = df.index[peaks]
 
         x_peaks = df.iloc[:, 0][peak_positions]
