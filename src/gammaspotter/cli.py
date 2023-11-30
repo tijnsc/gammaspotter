@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-from gammaspotter.process_data import CalibrateData, AnalyzeData
+from gammaspotter.process_data import CalibrateData, AnalyzeData, CleanData
 
 
 @click.group()
@@ -18,40 +18,59 @@ def cmd_group():
     help="Display the positions of the detected peaks in the spectrum.",
     is_flag=True,
 )
+@click.option(
+    "--no-cleaning",
+    help="Disable the default removal of last few rows of data usually containing edge effect abnormalities.",
+    is_flag=True,
+)
 @click.argument(
     "path", type=click.Path("rb", dir_okay=False, executable=False, path_type=Path)
 )
-def graph(path: Path, peaks: bool):
+def graph(path: Path, peaks: bool, no_cleaning: bool):
     """Display a measurement in CSV format as an interactive MPL plot.
 
     Args:
         path (str): location of the data file that should be displayed
+        peaks (bool): indicate whether the peaks should be detected and displayed in the figure
     """
 
     data = pd.read_csv(path)
+    if not no_cleaning:
+        data = CleanData(data=data).remove_edge_effect()
 
-    ax = data.plot(
-        "pulseheight",
-        "counts_ch_A",
+    fig, ax = plt.subplots()
+
+    if peaks:
+        peaks_df = AnalyzeData().find_gamma_peaks(
+            data=data, width=[3, 7], prominence=300
+        )
+
+        if peaks_df.size > 0:
+            peaks_df.plot(
+                ax=ax,
+                x="x_peaks",
+                y="y_peaks",
+                kind="scatter",
+                c="red",
+                s=50,
+                marker="x",
+                zorder=1,
+            )
+        else:
+            click.echo(
+                "No peaks have been detected, please adjust your detection parameters if you think this is incorrect."
+            )
+
+    data.plot(
+        ax=ax,
+        x="pulseheight",
+        y="counts_ch_A",
         legend=False,
         xlabel="Pulseheight",
         ylabel="Counts",
         title=path.stem,
         zorder=0,
     )
-
-    if peaks:
-        peaks_df = AnalyzeData.find_gamma_peaks(data=data, width=[3, 7], prominence=300)
-        peaks_df.plot(
-            ax=ax,
-            x="x_peaks",
-            y="y_peaks",
-            kind="scatter",
-            c="red",
-            s=50,
-            marker="x",
-            zorder=1,
-        )
 
     plt.show()
 
