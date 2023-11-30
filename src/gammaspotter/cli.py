@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-from gammaspotter.process_data import CalibrateData, AnalyzeData, CleanData
+from gammaspotter.process_data import ProcessData
 
 
 @click.group()
@@ -30,20 +30,20 @@ def graph(path: Path, peaks: bool, no_cleaning: bool):
     """Display a measurement in CSV format as an interactive MPL plot.
 
     Args:
-        path (str): location of the data file that should be displayed
+        path (Path): location of the data file that should be displayed
         peaks (bool): indicate whether the peaks should be detected and displayed in the figure
+        no_cleaning (bool): disable removal of edge effect
     """
-
     data = pd.read_csv(path)
+    data_process = ProcessData(data=data)
+
     if not no_cleaning:
-        data = CleanData(data=data).remove_edge_effect()
+        data = data_process.remove_edge_effect()
 
     fig, ax = plt.subplots()
 
     if peaks:
-        peaks_df = AnalyzeData().find_gamma_peaks(
-            data=data, width=[3, 7], prominence=300
-        )
+        peaks_df = data_process.find_gamma_peaks(width=[3, 7], prominence=300)
 
         if peaks_df.size > 0:
             peaks_df.plot(

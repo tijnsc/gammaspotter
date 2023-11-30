@@ -4,17 +4,12 @@ from lmfit import models
 from gammaspotter.fit_models import FitModels
 
 
-class CalibrateData:
+class ProcessData:
     def __init__(self, data: pd.DataFrame) -> None:
         self.data = data
 
     def calibrate(self):
         pass
-
-
-class CleanData:
-    def __init__(self, data: pd.DataFrame) -> None:
-        self.data = data
 
     def remove_edge_effect(self) -> pd.DataFrame:
         """Remove the last few rows of a dataframe to remove an edge effect from out of range binning.
@@ -23,11 +18,6 @@ class CleanData:
             pd.DataFrame: data without last four columns
         """
         return self.data[:-4]
-
-
-class AnalyzeData:
-    def __init__(self, data: pd.DataFrame) -> None:
-        self.data = data
 
     def find_gamma_peaks(self, width, prominence) -> pd.DataFrame:
         """Detect peaks in the gamma spectrum and return their positions in the graph.
@@ -84,15 +74,4 @@ class AnalyzeData:
 
 if __name__ == "__main__":
     data = pd.read_csv("data/Cs-137 1200s 100mV.csv")
-    domains = AnalyzeData().isolate_peaks(data=data)
-
-    model = FitModels.gaussian
-    AnalyzeData().fit_data(
-        model,
-        x=data["pulseheight"],
-        y=data["counts_ch_A"],
-        amp=10,
-        cen=12,
-        wid=12,
-        startheight=12,
-    )
+    data_processing = ProcessData(data=data)
