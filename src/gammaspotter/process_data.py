@@ -91,25 +91,26 @@ class ProcessData:
         )
         return result
 
+    def fit_peaks(self) -> list:
+        peaks = self.find_gamma_peaks([3, 6], 200)
+        peaks_x = peaks.iloc[:, 0]
+        peaks_y = peaks.iloc[:, 1]
+        domains = self.isolate_domains(centers=peaks_x)
+
+        fit_results = []
+        for index, domain in enumerate(domains):
+            result = self.fit_gauss(
+                data=domain,
+                amp=peaks_y.values[index],
+                cen=peaks_x.values[index],
+                wid=10,
+                startheight=10,
+            )
+
+            fit_results.append(result)
+
+        return fit_results
+
 
 if __name__ == "__main__":
-    data = pd.read_csv("data/Na-22 2400s HPG.csv")
-    data_processing = ProcessData(data=data)
-
-    centers = data_processing.find_gamma_peaks([3, 6], 200)
-    centers_x = centers.iloc[:, 0]
-    centers_y = centers.iloc[:, 1]
-    domains = data_processing.isolate_domains(centers=centers_x)
-
-    for index, domain in enumerate(domains):
-        result = data_processing.fit_gauss(
-            data=domain,
-            amp=centers_y.values[index],
-            cen=centers_x.values[index],
-            wid=10,
-            startheight=10,
-        )
-
-        result.plot(numpoints=1000)
-
-    plt.show()
+    pass
