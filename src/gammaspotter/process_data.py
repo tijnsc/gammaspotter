@@ -67,11 +67,25 @@ class ProcessData:
 
         return domains
 
-    def fit_gauss(self, amp, cen, wid, startheight):
+    def fit_gauss(
+        self, data: pd.DataFrame, amp: float, cen: float, wid: float, startheight: float
+    ):
+        """Takes data and fits a gaussian distribution over it.
+
+        Args:
+            data (pd.DataFrame): input data, has to be provided seperately from the main dataset
+            amp (float): expected amplitude of the distribution
+            cen (float): expected center of the distribution
+            wid (float): expected width of the distribution
+            startheight (float): expected start height of the distribution
+
+        Returns:
+            ModelResult: result of the performed fit
+        """
         gmodel = FitModels.gaussian
         lmfit_model = models.Model(gmodel)
-        x = self.data.iloc[:, 0]
-        y = self.data.iloc[:, 1]
+        x = data.iloc[:, 0]
+        y = data.iloc[:, 1]
         result = lmfit_model.fit(
             y, x=x, amp=amp, cen=cen, wid=wid, startheight=startheight
         )
@@ -82,20 +96,20 @@ if __name__ == "__main__":
     data = pd.read_csv("data/Na-22 2400s HPG.csv")
     data_processing = ProcessData(data=data)
 
-    # result = data_processing.fit_gauss(amp=10, cen=10, wid=10, startheight=10)
-    # result.params.pretty_print()
-
     centers = data_processing.find_gamma_peaks([3, 6], 200)
     centers_x = centers.iloc[:, 0]
     centers_y = centers.iloc[:, 1]
     domains = data_processing.isolate_domains(centers=centers_x)
 
     for index, domain in enumerate(domains):
-        data_processing.fit_gauss(
+        result = data_processing.fit_gauss(
+            data=domain,
             amp=centers_y.values[index],
             cen=centers_x.values[index],
             wid=10,
             startheight=10,
         )
+
+        result.plot(numpoints=1000)
 
     plt.show()
