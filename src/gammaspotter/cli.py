@@ -32,7 +32,7 @@ def cmd_group():
 @click.argument(
     "path", type=click.Path("rb", dir_okay=False, executable=False, path_type=Path)
 )
-def graph(path: Path, detect_peaks: bool, no_cleaning: bool, fit_peaks: bool):
+def graph(path: click.Path, detect_peaks: bool, no_cleaning: bool, fit_peaks: bool):
     """Display a measurement in CSV format as an interactive MPL plot.
 
     Args:
@@ -41,6 +41,7 @@ def graph(path: Path, detect_peaks: bool, no_cleaning: bool, fit_peaks: bool):
         detect_peaks (bool): indicate whether the peaks should be detected and displayed in the figure
         fit_peaks (bool): fit a gaussian function over the peaks to determine their positions more accurately
     """
+    path = Path(path)
     data = pd.read_csv(path)
     data_process = ProcessData(data=data)
 
@@ -97,7 +98,9 @@ def graph(path: Path, detect_peaks: bool, no_cleaning: bool, fit_peaks: bool):
 @cmd_group.command()
 @click.argument("path", type=click.Path())
 @click.argument("isotope", type=click.Choice(["Na-22", "test"]))
-def calibrate(path: Path, isotope: str):
+@click.option("-s", "--save", type=click.Path())
+def calibrate(path: click.Path, isotope: str, save: click.Path):
+    save = Path(save)
     calibration_catalog = {"Na-22": [511, 1274.537]}
 
     data = pd.read_csv(path)
@@ -116,6 +119,14 @@ def calibrate(path: Path, isotope: str):
     console = Console()
     console.print(table)
 
+    calibration_Series = pd.Series(
+        {
+            "Scaling factor": calibration_params[0],
+            "Horizontal offset": calibration_params[1],
+        }
+    )
+    if save:
+        calibration_Series.to_json(save.with_suffix(".json"))
 
 if __name__ == "__main__":
     cmd_group()
