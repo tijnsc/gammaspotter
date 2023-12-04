@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from rich.table import Table
 from rich.console import Console
+from datetime import datetime
+
 from gammaspotter.process_data import ProcessData
 
 
@@ -98,9 +100,13 @@ def graph(path: click.Path, detect_peaks: bool, no_cleaning: bool, fit_peaks: bo
 @cmd_group.command()
 @click.argument("path", type=click.Path())
 @click.argument("isotope", type=click.Choice(["Na-22", "test"]))
-@click.option("-s", "--save", type=click.Path())
+@click.option(
+    "-s",
+    "--save",
+    type=click.Path(dir_okay=True, file_okay=False),
+    help="Provide a directory where the calibration data should be saved.",
+)
 def calibrate(path: click.Path, isotope: str, save: click.Path):
-    save = Path(save)
     calibration_catalog = {"Na-22": [511, 1274.537]}
 
     data = pd.read_csv(path)
@@ -119,14 +125,18 @@ def calibrate(path: click.Path, isotope: str, save: click.Path):
     console = Console()
     console.print(table)
 
-    calibration_Series = pd.Series(
-        {
-            "Scaling factor": calibration_params[0],
-            "Horizontal offset": calibration_params[1],
-        }
-    )
     if save:
-        calibration_Series.to_json(save.with_suffix(".json"))
+        calibration_Series = pd.Series(
+            {
+                "UNIX Timestamp": datetime.now(),
+                "Scaling factor": calibration_params[0],
+                "Horizontal offset": calibration_params[1],
+            }
+        )
+        save = Path(save)
+        path = save / f"{isotope}_calibration.json"
+        calibration_Series.to_json(path)
+
 
 if __name__ == "__main__":
     cmd_group()

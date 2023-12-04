@@ -133,8 +133,3 @@ class ProcessData:
 
         horizontal_offset = mean(horizontal_offsets)
         return scaling_factor, horizontal_offset
-
-
-if __name__ == "__main__":
-    data = ProcessData(pd.read_csv("data/Na-22 2400s HPG.csv"))
-    data.calibrate()
