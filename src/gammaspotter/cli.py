@@ -2,7 +2,8 @@ import click
 import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
-
+from rich.table import Table
+from rich.console import Console
 from gammaspotter.process_data import ProcessData
 
 
@@ -81,11 +82,39 @@ def graph(path: Path, detect_peaks: bool, no_cleaning: bool, fit_peaks: bool):
     )
 
     if fit_peaks:
+        energies = []
         fit_results = data_process.fit_peaks()
         for result in fit_results:
-            plt.axvline(x=result.values["cen"], c="grey", linestyle="dotted")
+            x_expectation_val = result.values["cen"]
+            plt.axvline(x=x_expectation_val, c="grey", linestyle="dotted")
+            energies.append(x_expectation_val)
+
+        print(f"{energies=}")
 
     plt.show()
+
+
+@cmd_group.command()
+@click.argument("path", type=click.Path())
+@click.argument("isotope", type=click.Choice(["Na-22", "test"]))
+def calibrate(path: Path, isotope: str):
+    calibration_catalog = {"Na-22": [511, 1274.537]}
+
+    data = pd.read_csv(path)
+    data_process = ProcessData(data=data)
+
+    known_energies = calibration_catalog[isotope]
+
+    calibration_params = data_process.calibrate(known_energies=known_energies)
+
+    table = Table(title=f"{isotope} Calibration Results")
+    table.add_column("Scaling Factor")
+    table.add_column("Energy Offset")
+    scaling_str = f"{round(calibration_params[0], 4)} keV/mV"
+    hoffset_str = f"{round(calibration_params[1], 4)} keV"
+    table.add_row(scaling_str, hoffset_str)
+    console = Console()
+    console.print(table)
 
 
 if __name__ == "__main__":

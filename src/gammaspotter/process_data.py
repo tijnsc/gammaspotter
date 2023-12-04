@@ -2,16 +2,12 @@ import pandas as pd
 from scipy.signal import find_peaks
 from lmfit import models
 from gammaspotter.fit_models import FitModels
-
-import matplotlib.pyplot as plt
+from statistics import mean
 
 
 class ProcessData:
     def __init__(self, data: pd.DataFrame) -> None:
         self.data = data
-
-    def calibrate(self):
-        pass
 
     def remove_edge_effect(self) -> pd.DataFrame:
         """Remove the last few rows of a dataframe to remove an edge effect from out of range binning.
@@ -111,6 +107,34 @@ class ProcessData:
 
         return fit_results
 
+    def calibrate(self, known_energies: list[float]) -> tuple[float]:
+        detected_peak_fit = []
+        results = self.fit_peaks()
+        for result in results:
+            detected_peak_fit.append(result.values["cen"])
+
+        if len(detected_peak_fit) != len(known_energies):
+            raise Exception(
+                "Detected and reference peak mismatch. Please try another measurement or use another isotope."
+            )
+
+        detected_peak_fit = sorted(detected_peak_fit)
+        known_energies = sorted(known_energies)
+
+        diff_meas = detected_peak_fit[-1] - detected_peak_fit[0]
+        diff_ref = known_energies[-1] - known_energies[0]
+
+        scaling_factor = diff_ref / diff_meas
+        horizontal_offsets = []
+        for peak_nr in range(len(detected_peak_fit)):
+            horizontal_offsets.append(
+                detected_peak_fit[peak_nr] * scaling_factor - known_energies[peak_nr]
+            )
+
+        horizontal_offset = mean(horizontal_offsets)
+        return scaling_factor, horizontal_offset
+
 
 if __name__ == "__main__":
-    pass
+    data = ProcessData(pd.read_csv("data/Na-22 2400s HPG.csv"))
+    data.calibrate()
