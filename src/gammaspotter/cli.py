@@ -41,11 +41,8 @@ def cmd_group():
         exists=True,
         dir_okay=False,
         file_okay=True,
-        help="File containing calibration results which will be applied to the graph.",
     ),
 )
-
-
 def graph(
     path: click.Path,
     detect_peaks: bool,
@@ -64,6 +61,19 @@ def graph(
     """
     path = Path(path)
     data = pd.read_csv(path)
+
+    if calibrate:
+        calibrate_results = pd.read_csv(calibrate, index_col=None)
+        scaling = calibrate_results["scaling factor"][0]
+        offset = calibrate_results["horizontal offset"][0]
+
+        # apply calibration to first column: pulseheight
+        data.iloc[:, 0] = data.iloc[:, 0] * scaling - offset
+
+        x_label = "Energy [keV]"
+    else:
+        x_label = "Pulseheight [mV]"
+
     data_process = ProcessData(data=data)
 
     if not no_cleaning:
@@ -97,21 +107,25 @@ def graph(
         y="counts_ch_A",
         label="Spectrum",
         legend=True,
-        xlabel="Pulseheight",
+        xlabel=x_label,
         ylabel="Counts",
         title=path.stem,
         zorder=0,
     )
-
     if fit_peaks:
-        energies = []
-        fit_results = data_process.fit_peaks()
+        # energies = []
+
+        width = 10
+        if calibrate:
+            width *= scaling
+
+        fit_results = data_process.fit_peaks(width=width)
         for result in fit_results:
             x_expectation_val = result.values["cen"]
             plt.axvline(x=x_expectation_val, c="grey", linestyle="dotted")
-            energies.append(x_expectation_val)
+            # energies.append(x_expectation_val)
 
-        print(f"{energies=}")
+        # print(f"{energies=}")
 
     plt.show()
 
@@ -145,18 +159,18 @@ def calibrate(path: click.Path, isotope: str, save: click.Path):
     console.print(table)
 
     if save:
-        calibration_Series = pd.Series(
+        calibration_Series = pd.DataFrame(
             {
-                "unix timestamp": datetime.now(),
-                "isotope": isotope,
-                "scaling factor": calibration_params[0],
-                "horizontal offset": calibration_params[1],
+                "unix timestamp": [datetime.now()],
+                "isotope": [isotope],
+                "scaling factor": [calibration_params[0]],
+                "horizontal offset": [calibration_params[1]],
             }
         )
 
         save = Path(save)
-        path = save / f"{isotope}_calibration.json"
-        calibration_Series.to_json(path)
+        path = save / f"{isotope}_calibration.csv"
+        calibration_Series.to_csv(path, index=False)
 
 
 if __name__ == "__main__":
