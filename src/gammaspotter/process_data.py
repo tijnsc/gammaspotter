@@ -1,9 +1,8 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 from scipy.signal import find_peaks
 from lmfit import models
 from gammaspotter.fit_models import FitModels
-
-import matplotlib.pyplot as plt
 
 
 class ProcessData:
@@ -14,10 +13,10 @@ class ProcessData:
         pass
 
     def remove_edge_effect(self) -> pd.DataFrame:
-        """Remove the last few rows of a dataframe to remove an edge effect from out of range binning.
+        """Remove the last four rows of a dataframe to remove an edge effect from out of range binning.
 
         Returns:
-            pd.DataFrame: data without last four columns
+            pd.DataFrame: Data without last four columns.
         """
         return self.data[:-4]
 
@@ -25,7 +24,7 @@ class ProcessData:
         """Detect peaks in the gamma spectrum and return their positions in the graph.
 
         Returns:
-            pd.DataFrame: the x and y coordinates of the detected peaks
+            pd.DataFrame: The x and y coordinates of the detected peaks.
         """
         y = self.data.iloc[:, 1]
         peaks, _ = find_peaks(y, width=width, prominence=prominence)
@@ -49,11 +48,11 @@ class ProcessData:
         """Creates subset dataframes from the input data which contain a domain of given width around specified center values, useful for isolating peaks in spectra.
 
         Args:
-            centers (list[float]): x-values around which the domains should be generated
-            width (float, optional): width of the generated DataFrames. Defaults to 10.
+            centers (list[float]): x-values around which the domains should be generated.
+            width (float, optional): Width of the generated DataFrames. Defaults to 10.
 
         Returns:
-            list[pd.DataFrame]: list containing generated DataFrames
+            list[pd.DataFrame]: list containing generated DataFrames.
         """
         domains = []
         for x in centers:
