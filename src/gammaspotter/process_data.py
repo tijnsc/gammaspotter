@@ -45,14 +45,15 @@ class ProcessData:
     def isolate_domains(
         self, centers: list[float], width: float = 10
     ) -> list[pd.DataFrame]:
-        """Creates subset dataframes from the input data which contain a domain of given width around specified center values, useful for isolating peaks in spectra.
+        """Creates subset dataframes from the input data which contain a domain of given width around specified center values,
+           useful for isolating peaks in spectra.
 
         Args:
             centers (list[float]): x-values around which the domains should be generated.
-            width (float, optional): Width of the generated DataFrames. Defaults to 10.
+            width (float, optional): Width of the generated DataFrames iwth a defaults of 10.
 
         Returns:
-            list[pd.DataFrame]: list containing generated DataFrames.
+            list[pd.DataFrame]: List containing generated DataFrames.
         """
         domains = []
         for x in centers:
@@ -72,14 +73,14 @@ class ProcessData:
         """Takes data and fits a gaussian distribution over it.
 
         Args:
-            data (pd.DataFrame): input data, has to be provided seperately from the main dataset
-            amp (float): expected amplitude of the distribution
-            cen (float): expected center of the distribution
-            wid (float): expected width of the distribution
-            startheight (float): expected start height of the distribution
+            data (pd.DataFrame): Input data, has to be provided seperately from the main dataset.
+            amp (float): Expected amplitude of the distribution.
+            cen (float): Expected center of the distribution.
+            wid (float): Expected width of the distribution.
+            startheight (float): Expected startheight of the distribution.
 
         Returns:
-            ModelResult: result of the performed fit
+            ModelResult: Result of the performed fit.
         """
         gmodel = FitModels.gaussian
         lmfit_model = models.Model(gmodel)
@@ -91,6 +92,12 @@ class ProcessData:
         return result
 
     def fit_peaks(self) -> list:
+        """Takes the rough data and uses the peak finder function and the domain function.
+           Than fits a gaussian function for better accuracy and returns this.
+
+        Returns:
+            list: A list of accurate data.
+        """
         peaks = self.find_gamma_peaks([3, 6], 200)
         peaks_x = peaks.iloc[:, 0]
         peaks_y = peaks.iloc[:, 1]
