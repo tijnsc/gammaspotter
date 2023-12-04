@@ -117,7 +117,7 @@ class ProcessData:
 
     def calibrate(self, known_energies: list[float]) -> tuple[float]:
         detected_peak_fit = []
-        results = self.fit_peaks()
+        results = self.fit_peaks(width=10)
         for result in results:
             detected_peak_fit.append(result.values["cen"])
 

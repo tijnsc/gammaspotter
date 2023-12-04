@@ -130,9 +130,14 @@ def graph(
     plt.show()
 
 
+# get a list of available calibration isotopes before command is run
+calibration_catalog = pd.read_csv("catalogs/common_calibration_sources.csv")
+isotopes = list(set(calibration_catalog.iloc[:, 0]))
+
+
 @cmd_group.command()
 @click.argument("path", type=click.Path())
-@click.argument("isotope", type=click.Choice(["Na-22"]))
+@click.argument("isotope", type=click.Choice(isotopes))
 @click.option(
     "-s",
     "--save",
@@ -140,14 +145,16 @@ def graph(
     help="Provide a directory where the calibration data should be saved.",
 )
 def calibrate(path: click.Path, isotope: str, save: click.Path):
-    calibration_catalog = {"Na-22": [511, 1274.537]}
-
     data = pd.read_csv(path)
     data_process = ProcessData(data=data)
 
-    known_energies = calibration_catalog[isotope]
+    known_energies = calibration_catalog[calibration_catalog["isotope"] == isotope]
+    isotope_energies = [
+        float(known_energies.iloc[:, 1].values[0]),
+        float(known_energies.iloc[:, 2].values[0]),
+    ]
 
-    calibration_params = data_process.calibrate(known_energies=known_energies)
+    calibration_params = data_process.calibrate(known_energies=isotope_energies)
 
     table = Table(title=f"{isotope} Calibration Results")
     table.add_column("Scaling Factor")
