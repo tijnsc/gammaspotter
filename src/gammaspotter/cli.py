@@ -11,7 +11,7 @@ from gammaspotter.process_data import ProcessData
 
 @click.group()
 def cmd_group():
-    """A CLI tool for gammaspotter."""
+    """A command line interface tool for gammaspotter."""
     pass
 
 
@@ -44,6 +44,8 @@ def cmd_group():
         help="File containing calibration results which will be applied to the graph.",
     ),
 )
+
+
 def graph(
     path: click.Path,
     detect_peaks: bool,
@@ -51,7 +53,7 @@ def graph(
     fit_peaks: bool,
     calibrate: bool,
 ):
-    """Display a measurement in CSV format as an interactive MPL plot.
+    """A measurement in CSV displayed as an interactive matplotlib plot.
 
     Args:
         path (Path): location of the data file that should be displayed
