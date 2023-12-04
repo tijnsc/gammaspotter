@@ -1,5 +1,4 @@
 import pandas as pd
-import matplotlib.pyplot as plt
 from scipy.signal import find_peaks
 from lmfit import models
 from gammaspotter.fit_models import FitModels
