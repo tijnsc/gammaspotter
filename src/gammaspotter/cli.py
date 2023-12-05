@@ -119,7 +119,7 @@ def graph(
         if calibrate:
             width *= scaling
 
-        fit_results = data_process.fit_peaks(width=width)
+        fit_results = data_process.fit_peaks(domain_width=width)
         for result in fit_results:
             x_expectation_val = result.values["cen"]
             plt.axvline(x=x_expectation_val, c="grey", linestyle="dotted")

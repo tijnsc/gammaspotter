@@ -88,18 +88,21 @@ class ProcessData:
         )
         return result
 
-    def fit_peaks(self, width: float) -> list:
-        """Takes the rough data and uses the peak finder function and the domain function.
-           Than fits a gaussian function for better accuracy and returns this.
+    def fit_peaks(self, domain_width: float) -> list:
+        """Takes raw spectrum data and performs a gaussian model fit on domains of the roughly detected peaks.
+        This function returns more accurate peak positions than 'find_gamma_peaks'.
+
+        Args:
+            domain_width (float): width of the domains generated for analysis
 
         Returns:
-            list: A list of accurate data.
+            list: results of the gaussian fits
         """
         peaks = self.find_gamma_peaks([3, 6], 200)
         peaks_x = peaks.iloc[:, 0]
         peaks_y = peaks.iloc[:, 1]
 
-        domains = self.isolate_domains(centers=peaks_x, width=width)
+        domains = self.isolate_domains(centers=peaks_x, width=domain_width)
 
         fit_results = []
         for index, domain in enumerate(domains):
