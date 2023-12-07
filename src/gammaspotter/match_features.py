@@ -4,7 +4,10 @@ from scipy.special import erfc
 
 def matcher(found_energy_sigma_list, energy_list):
     output_list = []
+    sorted_list = []
     peak_nr = 1
+    number = 1
+    count = 0
     for found_energy_sigma in found_energy_sigma_list:
         found_energy = found_energy_sigma[0]
         sigma = found_energy_sigma[1]
@@ -15,7 +18,21 @@ def matcher(found_energy_sigma_list, energy_list):
             percentage = sigma_changer(sigma_source)
             output_list.append([peak_nr, source_name, np.round(percentage, 2)])
         peak_nr += 1
-    return output_list
+
+    for peak in output_list:
+        if peak[0] == number:
+            count += 1
+            sorted_output_list = sorted(output_list, reverse=True, key=lambda x: x[2])
+        else:
+            count = 0
+            number += 1
+            cut_list = output_list[:count]
+            sorted_cut_list = sorted(cut_list, reverse=True, key=lambda x: x[2])
+            sorted_list = sorted_list + sorted_cut_list
+        
+
+
+    return sorted_output_list
 
 
 def sigma_changer(sigma_source):
