@@ -7,15 +7,8 @@ from statistics import mean
 
 class ProcessData:
     def __init__(self, data: pd.DataFrame) -> None:
-        self.data = data
-
-    def remove_edge_effect(self) -> pd.DataFrame:
-        """Remove the last four rows of a dataframe to remove an edge effect from out of range binning.
-
-        Returns:
-            pd.DataFrame: Data without last four columns.
-        """
-        return self.data[:-4]
+        # remove last four rows of data to remove edge effect from out of range binning
+        self.data = data[:-4]
 
     def find_gamma_peaks(self, prominence) -> pd.DataFrame:
         """Detect peaks in the gamma spectrum and return their positions in the graph.
