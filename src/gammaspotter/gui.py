@@ -53,11 +53,11 @@ class UserInterface(QtWidgets.QMainWindow):
 
         remove_peaks_btn = QtWidgets.QPushButton("Remove Peaks")
         hbox_peaks.addWidget(remove_peaks_btn)
-        
+
         open_btn.clicked.connect(self.open_file)
         detect_peaks_btn.clicked.connect(self.plot_peaks)
         remove_peaks_btn.clicked.connect(self.remove_points)
-    
+
     def setup_calibrate_tab(self):
         hbox_main = QtWidgets.QHBoxLayout(self.calibrate_tab)
         self.plot_widget_calibrate = pg.PlotWidget()
@@ -82,15 +82,23 @@ class UserInterface(QtWidgets.QMainWindow):
     def open_file(self):
         filename, _ = QtWidgets.QFileDialog.getOpenFileName(filter="CSV files (*.csv)")
         if filename:
-            self.plot_widget_analyze.clear()
-            self.plot_widget_analyze.setLabel("left", "Counts")
-            self.plot_widget_analyze.setLabel("bottom", "Energy")
-
             opened_file = pd.read_csv(filename)
-            self.process_data = ProcessData(opened_file)
 
-            spectrum_data = self.process_data.data
-            self.plot_widget_analyze.plot(
+            match self.central_widget.currentIndex():
+                case 0:
+                    plot_widget = self.plot_widget_analyze
+                    self.process_data_analyze = ProcessData(opened_file)
+                    latest_data = self.process_data_analyze
+
+                case 1:
+                    plot_widget = self.plot_widget_calibrate
+                    self.process_data_calibrate = ProcessData(opened_file)
+                    latest_data = self.process_data_calibrate
+
+            plot_widget.clear()
+
+            spectrum_data = latest_data.data
+            plot_widget.plot(
                 x=spectrum_data.iloc[:, 0],
                 y=spectrum_data.iloc[:, 1],
                 symbol=None,
@@ -103,7 +111,7 @@ class UserInterface(QtWidgets.QMainWindow):
             self.plot_widget_analyze.removeItem(self.peaks_scatter)
         except:
             pass
-        peaks_data = self.process_data.find_gamma_peaks(
+        peaks_data = self.process_data_analyze.find_gamma_peaks(
             prominence=self.peak_sens_spin.value()
         )
         self.peaks_scatter = pg.ScatterPlotItem(
