@@ -13,18 +13,21 @@ class UserInterface(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
 
-        central_widget = QtWidgets.QTabWidget()
-        self.setCentralWidget(central_widget)
+        self.central_widget = QtWidgets.QTabWidget()
+        self.setCentralWidget(self.central_widget)
         self.setWindowTitle("Gammaspotter GUI utility")
 
-        analyze_tab = QtWidgets.QWidget()
-        calibrate_tab = QtWidgets.QWidget()
+        self.analyze_tab = QtWidgets.QWidget()
+        self.calibrate_tab = QtWidgets.QWidget()
 
-        central_widget.addTab(analyze_tab, "Analyze")
-        central_widget.addTab(calibrate_tab, "Calibrate")
+        self.central_widget.addTab(self.analyze_tab, "Analyze")
+        self.central_widget.addTab(self.calibrate_tab, "Calibrate")
 
-        # start of analyze tab
-        hbox_main = QtWidgets.QHBoxLayout(analyze_tab)
+        self.setup_analyze_tab()
+        self.setup_calibrate_tab()
+
+    def setup_analyze_tab(self):
+        hbox_main = QtWidgets.QHBoxLayout(self.analyze_tab)
         self.plot_widget_analyze = pg.PlotWidget()
         hbox_main.addWidget(self.plot_widget_analyze)
 
@@ -50,14 +53,13 @@ class UserInterface(QtWidgets.QMainWindow):
 
         remove_peaks_btn = QtWidgets.QPushButton("Remove Peaks")
         hbox_peaks.addWidget(remove_peaks_btn)
-
+        
         open_btn.clicked.connect(self.open_file)
         detect_peaks_btn.clicked.connect(self.plot_peaks)
         remove_peaks_btn.clicked.connect(self.remove_points)
-        # end of analyze tab
-
-        # start of calibrate tab
-        hbox_main = QtWidgets.QHBoxLayout(calibrate_tab)
+    
+    def setup_calibrate_tab(self):
+        hbox_main = QtWidgets.QHBoxLayout(self.calibrate_tab)
         self.plot_widget_calibrate = pg.PlotWidget()
         hbox_main.addWidget(self.plot_widget_calibrate)
 
@@ -74,7 +76,7 @@ class UserInterface(QtWidgets.QMainWindow):
         self.combo_isotope.addItems(["Na-22", "Cs-137"])
         form.addRow("Measured Isotope", self.combo_isotope)
 
-        # end of calibrate tab
+        open_btn.clicked.connect(self.open_file)
 
     @Slot()
     def open_file(self):
