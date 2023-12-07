@@ -215,11 +215,12 @@ class UserInterface(QtWidgets.QMainWindow):
         except:
             self.analysis_log.append("No data has been loaded.")
             return
+
         self.analysis_log.append(
-            f"Fitted {len(fit_peaks_x)} peaks:\n{pd.DataFrame(fit_peaks_x).to_markdown(index=False, tablefmt='plain', headers=['Energy'])}"
+            f"Fitted {len(fit_peaks_x)} peaks:\n{fit_peaks_x.to_markdown(index=False, tablefmt='plain', headers=['Energy', 'Standard Error'])}"
         )
         self.vlines = []
-        for x_peak in fit_peaks_x:
+        for x_peak in fit_peaks_x.iloc[:, 0]:
             vline = pg.InfiniteLine(pos=x_peak, label=f"{round(x_peak, 1)}")
             self.vlines.append(vline)
             self.plot_widget_analyze.addItem(vline)
