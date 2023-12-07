@@ -39,10 +39,10 @@ class UserInterface(QtWidgets.QMainWindow):
         open_btn = QtWidgets.QPushButton("Open Measurement")
         form.addRow(open_btn)
 
-        self.peak_sens_spin = QtWidgets.QSpinBox()
-        self.peak_sens_spin.setRange(1, 10000)
-        self.peak_sens_spin.setValue(100)
-        form.addRow("Peak detection sensitivity", self.peak_sens_spin)
+        self.peak_thresh_spin = QtWidgets.QSpinBox()
+        self.peak_thresh_spin.setRange(1, 1000000)
+        self.peak_thresh_spin.setValue(100)
+        form.addRow("Peak detection threshold", self.peak_thresh_spin)
 
         grid_buttons = QtWidgets.QGridLayout()
         form.addRow(grid_buttons)
@@ -127,13 +127,23 @@ class UserInterface(QtWidgets.QMainWindow):
 
     @Slot()
     def clear_analysis_plot(self):
-        self.plot_widget_analyze.clear()
-        self.analysis_log.append("Cleared the plot.")
+        try:
+            del self.process_data_analyze
+        except:
+            self.analysis_log.append("Nothing to clear.")
+        else:
+            self.plot_widget_analyze.clear()
+            self.analysis_log.append("Cleared the plot.")
 
     @Slot()
     def clear_calibration_plot(self):
-        self.plot_widget_calibrate.clear()
-        self.calibration_log.append("Cleared the plot.")
+        try:
+            del self.process_data_calibrate
+        except:
+            self.calibration_log.append("Nothing to clear.")
+        else:
+            self.plot_widget_calibrate.clear()
+            self.calibration_log.append("Cleared the plot.")
 
     @Slot()
     def open_file(self):
@@ -176,7 +186,7 @@ class UserInterface(QtWidgets.QMainWindow):
             pass
         try:
             peaks_data = self.process_data_analyze.find_gamma_peaks(
-                prominence=self.peak_sens_spin.value()
+                prominence=self.peak_thresh_spin.value()
             )
         except:
             self.analysis_log.append("No data has been loaded.")
@@ -200,12 +210,14 @@ class UserInterface(QtWidgets.QMainWindow):
             pass
         try:
             fit_peaks_x = self.process_data_analyze.fit_peaks(
-                domain_width=10, prominence=self.peak_sens_spin.value()
+                domain_width=10, prominence=self.peak_thresh_spin.value()
             )
         except:
             self.analysis_log.append("No data has been loaded.")
             return
-        self.analysis_log.append(f"Fitted {len(fit_peaks_x)} peaks:\n{fit_peaks_x}")
+        self.analysis_log.append(
+            f"Fitted {len(fit_peaks_x)} peaks:\n{pd.DataFrame(fit_peaks_x).to_markdown(index=False, tablefmt='plain', headers=['Energy'])}"
+        )
         self.vlines = []
         for x_peak in fit_peaks_x:
             vline = pg.InfiniteLine(pos=x_peak, label=f"{round(x_peak, 1)}")
