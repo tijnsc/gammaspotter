@@ -229,10 +229,6 @@ class UserInterface(QtWidgets.QMainWindow):
         except:
             self.analysis_log.append("There are no lines to remove.")
 
-    def plot_vline(self, data_feature):
-        for x_peak in data_feature:
-            self.plot_widget_analyze.InfiniteLine(pos=x_peak)
-
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
