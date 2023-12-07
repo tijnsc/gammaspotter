@@ -5,7 +5,6 @@ import pyqtgraph as pg
 import pandas as pd
 
 from PySide6.QtCore import Slot
-import numpy as np
 
 from gammaspotter.process_data import ProcessData
 
@@ -36,11 +35,18 @@ class UserInterface(QtWidgets.QMainWindow):
         self.peak_sens_spin.setValue(100)
         form.addRow("Peak detection sensitivity", self.peak_sens_spin)
 
-        fit_peaks_btn = QtWidgets.QPushButton("Fit Peaks")
-        form.addRow(fit_peaks_btn)
+        hbox_peaks = QtWidgets.QHBoxLayout()
+        form.addRow(hbox_peaks)
+
+        detect_peaks_btn = QtWidgets.QPushButton("Detect Peaks")
+        hbox_peaks.addWidget(detect_peaks_btn)
+
+        remove_peaks_btn = QtWidgets.QPushButton("Remove Peaks")
+        hbox_peaks.addWidget(remove_peaks_btn)
 
         open_btn.clicked.connect(self.open_file)
-        fit_peaks_btn.clicked.connect(self.detect_peaks)
+        detect_peaks_btn.clicked.connect(self.plot_peaks)
+        remove_peaks_btn.clicked.connect(self.remove_points)
 
     @Slot()
     def open_file(self):
@@ -53,20 +59,33 @@ class UserInterface(QtWidgets.QMainWindow):
             opened_file = pd.read_csv(filename)
             self.process_data = ProcessData(opened_file)
 
-            current_data = self.process_data.data
-            self.plot(x=current_data.iloc[:, 0], y=current_data.iloc[:, 1])
+            spectrum_data = self.process_data.data
+            self.plot_widget.plot(
+                x=spectrum_data.iloc[:, 0],
+                y=spectrum_data.iloc[:, 1],
+                symbol=None,
+                pen={"color": "w", "width": 5},
+            )
 
     @Slot()
-    def detect_peaks(self):
+    def plot_peaks(self):
+        try:
+            self.plot_widget.removeItem(self.peaks_scatter)
+        except:
+            pass
         peaks_data = self.process_data.find_gamma_peaks(
             prominence=self.peak_sens_spin.value()
         )
-        self.plot(x=peaks_data.iloc[:, 0], y=peaks_data.iloc[:, 1])
-
-    def plot(self, x, y):
-        self.plot_widget.plot(
-            x=np.array(x), y=np.array(y), symbol=None, pen={"color": "w", "width": 5}
+        self.peaks_scatter = pg.ScatterPlotItem(
+            size=10, brush=pg.mkBrush("r"), symbol="+"
         )
+        self.peaks_scatter.addPoints(x=peaks_data.iloc[:, 0], y=peaks_data.iloc[:, 1])
+
+        self.plot_widget.addItem(self.peaks_scatter)
+
+    @Slot()
+    def remove_points(self):
+        self.plot_widget.removeItem(self.peaks_scatter)
 
     def plot_vline(self, data_feature):
         for x_peak in data_feature:
