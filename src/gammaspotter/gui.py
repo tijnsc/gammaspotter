@@ -5,7 +5,6 @@ import pyqtgraph as pg
 import pandas as pd
 
 from PySide6.QtCore import Slot
-
 from gammaspotter.process_data import ProcessData
 
 
@@ -54,7 +53,15 @@ class UserInterface(QtWidgets.QMainWindow):
         remove_peaks_btn = QtWidgets.QPushButton("Remove Peaks")
         hbox_peaks.addWidget(remove_peaks_btn)
 
+        vbox_menu.addWidget(QtWidgets.QLabel("Analysis Log"))
+        self.analysis_log = QtWidgets.QTextEdit()
+        self.analysis_log.setReadOnly(True)
+        vbox_menu.addWidget(self.analysis_log)
+        clear_analysis_log_btn = QtWidgets.QPushButton("Clear Log")
+        vbox_menu.addWidget(clear_analysis_log_btn)
+
         open_btn.clicked.connect(self.open_file)
+        clear_analysis_log_btn.clicked.connect(self.clear_analysis_log)
         detect_peaks_btn.clicked.connect(self.plot_peaks)
         remove_peaks_btn.clicked.connect(self.remove_points)
 
@@ -76,7 +83,29 @@ class UserInterface(QtWidgets.QMainWindow):
         self.combo_isotope.addItems(["Na-22", "Cs-137"])
         form.addRow("Measured Isotope", self.combo_isotope)
 
+        cal_btn = QtWidgets.QPushButton("Perform Calibration")
+        form.addRow(cal_btn)
+
+        save_cal_btn = QtWidgets.QPushButton("Save Calibrated Measurement")
+        form.addRow(save_cal_btn)
+
+        vbox_menu.addWidget(QtWidgets.QLabel("Calibration Log"))
+        self.calibration_log = QtWidgets.QTextEdit()
+        self.calibration_log.setReadOnly(True)
+        vbox_menu.addWidget(self.calibration_log)
+        clear_calibration_log_btn = QtWidgets.QPushButton("Clear Log")
+        vbox_menu.addWidget(clear_calibration_log_btn)
+
         open_btn.clicked.connect(self.open_file)
+        clear_calibration_log_btn.clicked.connect(self.clear_calibration_log)
+
+    @Slot()
+    def clear_analysis_log(self):
+        self.analysis_log.clear()
+
+    @Slot()
+    def clear_calibration_log(self):
+        self.calibration_log.clear()
 
     @Slot()
     def open_file(self):
@@ -89,11 +118,13 @@ class UserInterface(QtWidgets.QMainWindow):
                     plot_widget = self.plot_widget_analyze
                     self.process_data_analyze = ProcessData(opened_file)
                     latest_data = self.process_data_analyze
+                    window_log = self.analysis_log
 
                 case 1:
                     plot_widget = self.plot_widget_calibrate
                     self.process_data_calibrate = ProcessData(opened_file)
                     latest_data = self.process_data_calibrate
+                    window_log = self.calibration_log
 
             plot_widget.clear()
 
@@ -104,6 +135,7 @@ class UserInterface(QtWidgets.QMainWindow):
                 symbol=None,
                 pen={"color": "w", "width": 5},
             )
+            window_log.append(f"Opened {filename}.")
 
     @Slot()
     def plot_peaks(self):
@@ -118,8 +150,11 @@ class UserInterface(QtWidgets.QMainWindow):
             size=10, brush=pg.mkBrush("r"), symbol="+"
         )
         self.peaks_scatter.addPoints(x=peaks_data.iloc[:, 0], y=peaks_data.iloc[:, 1])
-
         self.plot_widget_analyze.addItem(self.peaks_scatter)
+
+        self.analysis_log.append(
+            f"Detected {len(peaks_data)} peaks:\n{peaks_data.to_markdown(index=False, tablefmt='plain', headers=['Energy', 'Counts'])}"
+        )
 
     @Slot()
     def remove_points(self):
