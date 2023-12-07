@@ -130,20 +130,20 @@ class UserInterface(QtWidgets.QMainWindow):
         try:
             del self.process_data_analyze
         except:
-            self.analysis_log.append("Nothing to clear.")
+            self.analysis_log.append("Nothing to clear.\n")
         else:
             self.plot_widget_analyze.clear()
-            self.analysis_log.append("Cleared the plot.")
+            self.analysis_log.append("Cleared the plot.\n")
 
     @Slot()
     def clear_calibration_plot(self):
         try:
             del self.process_data_calibrate
         except:
-            self.calibration_log.append("Nothing to clear.")
+            self.calibration_log.append("Nothing to clear.\n")
         else:
             self.plot_widget_calibrate.clear()
-            self.calibration_log.append("Cleared the plot.")
+            self.calibration_log.append("Cleared the plot.\n")
 
     @Slot()
     def open_file(self):
@@ -176,7 +176,7 @@ class UserInterface(QtWidgets.QMainWindow):
                 symbol=None,
                 pen={"color": "w", "width": 3},
             )
-            window_log.append(f"Opened {filename}.")
+            window_log.append(f"Opened {filename}.\n")
 
     @Slot()
     def plot_peaks(self):
@@ -189,7 +189,7 @@ class UserInterface(QtWidgets.QMainWindow):
                 prominence=self.peak_thresh_spin.value()
             )
         except:
-            self.analysis_log.append("No data has been loaded.")
+            self.analysis_log.append("No data has been loaded.\n")
             return
         self.peaks_scatter = pg.ScatterPlotItem(
             size=15, brush=pg.mkBrush("r"), symbol="x"
@@ -198,7 +198,7 @@ class UserInterface(QtWidgets.QMainWindow):
         self.plot_widget_analyze.addItem(self.peaks_scatter)
 
         self.analysis_log.append(
-            f"Detected {len(peaks_data)} peaks:\n{peaks_data.to_markdown(index=False, tablefmt='plain', headers=['Energy', 'Counts'])}"
+            f"Detected {len(peaks_data)} peaks:\n{peaks_data.to_markdown(index=False, tablefmt='plain', headers=['Energy', 'Counts'])}\n"
         )
 
     @Slot()
@@ -213,11 +213,11 @@ class UserInterface(QtWidgets.QMainWindow):
                 domain_width=10, prominence=self.peak_thresh_spin.value()
             )
         except:
-            self.analysis_log.append("No data has been loaded.")
+            self.analysis_log.append("No data has been loaded.\n")
             return
 
         self.analysis_log.append(
-            f"Fitted {len(fit_peaks_x)} peaks:\n{fit_peaks_x.to_markdown(index=False, tablefmt='plain', headers=['Energy', 'Standard Error'])}"
+            f"Fitted {len(fit_peaks_x)} peaks:\n{fit_peaks_x.to_markdown(index=False, tablefmt='plain', headers=['Energy', 'Standard Error'])}\n"
         )
         self.vlines = []
         for x_peak in fit_peaks_x.iloc[:, 0]:
@@ -229,18 +229,18 @@ class UserInterface(QtWidgets.QMainWindow):
     def remove_points(self):
         try:
             self.plot_widget_analyze.removeItem(self.peaks_scatter)
-            self.analysis_log.append("Points have been removed.")
+            self.analysis_log.append("Points have been removed.\n")
         except:
-            self.analysis_log.append("There are no points to remove.")
+            self.analysis_log.append("There are no points to remove.\n")
 
     @Slot()
     def remove_vlines(self):
         try:
             for vline in self.vlines:
                 self.plot_widget_analyze.removeItem(vline)
-            self.analysis_log.append("Peak fit lines have been removed.")
+            self.analysis_log.append("Peak fit lines have been removed.\n")
         except:
-            self.analysis_log.append("There are no lines to remove.")
+            self.analysis_log.append("There are no lines to remove.\n")
 
 
 def main():
