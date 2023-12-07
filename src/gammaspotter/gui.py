@@ -44,6 +44,11 @@ class UserInterface(QtWidgets.QMainWindow):
         self.peak_thresh_spin.setValue(100)
         form.addRow("Peak detection threshold", self.peak_thresh_spin)
 
+        self.domain_width_spin = QtWidgets.QSpinBox()
+        self.domain_width_spin.setRange(1, 1000000)
+        self.domain_width_spin.setValue(10)
+        form.addRow("Fit domain width", self.domain_width_spin)
+
         grid_buttons = QtWidgets.QGridLayout()
         form.addRow(grid_buttons)
 
@@ -210,7 +215,8 @@ class UserInterface(QtWidgets.QMainWindow):
             pass
         try:
             fit_peaks_x = self.process_data_analyze.fit_peaks(
-                domain_width=10, prominence=self.peak_thresh_spin.value()
+                domain_width=self.domain_width_spin.value(),
+                prominence=self.peak_thresh_spin.value(),
             )
         except:
             self.analysis_log.append("No data has been loaded.\n")

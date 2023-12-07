@@ -39,15 +39,13 @@ class ProcessData:
 
         return peaks_data
 
-    def isolate_domains(
-        self, centers: list[float], width: float = 10
-    ) -> list[pd.DataFrame]:
+    def isolate_domains(self, centers: list[float], width: float) -> list[pd.DataFrame]:
         """Creates subset dataframes from the input data which contain a domain of given width around specified center values,
            useful for isolating peaks in spectra.
 
         Args:
             centers (list[float]): x-values around which the domains should be generated.
-            width (float, optional): Width of the generated DataFrames iwth a defaults of 10.
+            width (float, optional): Width of the generated DataFrames.
 
         Returns:
             list[pd.DataFrame]: List containing generated DataFrames.
