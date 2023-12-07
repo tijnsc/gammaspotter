@@ -128,12 +128,15 @@ class UserInterface(QtWidgets.QMainWindow):
 
             plot_widget.clear()
 
+            plot_widget.setLabel("left", "Counts")
+            plot_widget.setLabel("bottom", "Energy")
+
             spectrum_data = latest_data.data
             plot_widget.plot(
                 x=spectrum_data.iloc[:, 0],
                 y=spectrum_data.iloc[:, 1],
                 symbol=None,
-                pen={"color": "w", "width": 5},
+                pen={"color": "w", "width": 3},
             )
             window_log.append(f"Opened {filename}.")
 
@@ -143,11 +146,15 @@ class UserInterface(QtWidgets.QMainWindow):
             self.plot_widget_analyze.removeItem(self.peaks_scatter)
         except:
             pass
-        peaks_data = self.process_data_analyze.find_gamma_peaks(
-            prominence=self.peak_sens_spin.value()
-        )
+        try:
+            peaks_data = self.process_data_analyze.find_gamma_peaks(
+                prominence=self.peak_sens_spin.value()
+            )
+        except:
+            self.analysis_log.append("No data has been loaded.")
+            return
         self.peaks_scatter = pg.ScatterPlotItem(
-            size=10, brush=pg.mkBrush("r"), symbol="+"
+            size=15, brush=pg.mkBrush("r"), symbol="x"
         )
         self.peaks_scatter.addPoints(x=peaks_data.iloc[:, 0], y=peaks_data.iloc[:, 1])
         self.plot_widget_analyze.addItem(self.peaks_scatter)
@@ -158,7 +165,11 @@ class UserInterface(QtWidgets.QMainWindow):
 
     @Slot()
     def remove_points(self):
-        self.plot_widget_analyze.removeItem(self.peaks_scatter)
+        try:
+            self.plot_widget_analyze.removeItem(self.peaks_scatter)
+            self.analysis_log.append("Points have been removed.")
+        except:
+            self.analysis_log.append("There are no points to remove.")
 
     def plot_vline(self, data_feature):
         for x_peak in data_feature:
