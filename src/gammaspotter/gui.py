@@ -14,7 +14,7 @@ class UserInterface(QtWidgets.QMainWindow):
 
         self.central_widget = QtWidgets.QTabWidget()
         self.setCentralWidget(self.central_widget)
-        self.setWindowTitle("Gammaspotter GUI utility")
+        self.setWindowTitle("Gammaspotter GUI")
 
         self.analyze_tab = QtWidgets.QWidget()
         self.calibrate_tab = QtWidgets.QWidget()
@@ -65,6 +65,9 @@ class UserInterface(QtWidgets.QMainWindow):
         vbox_menu.addWidget(QtWidgets.QLabel("Analysis Log"))
         self.analysis_log = QtWidgets.QTextEdit()
         self.analysis_log.setReadOnly(True)
+        self.analysis_log.append(
+            "Gammaspotter by Dylan Telleman and Tijn Schuitevoerder.\n"
+        )
         vbox_menu.addWidget(self.analysis_log)
 
         hbox_clear = QtWidgets.QHBoxLayout()
@@ -109,6 +112,9 @@ class UserInterface(QtWidgets.QMainWindow):
         vbox_menu.addWidget(QtWidgets.QLabel("Calibration Log"))
         self.calibration_log = QtWidgets.QTextEdit()
         self.calibration_log.setReadOnly(True)
+        self.calibration_log.append(
+            "Gammaspotter by Dylan Telleman and Tijn Schuitevoerder.\n"
+        )
         vbox_menu.addWidget(self.calibration_log)
 
         hbox_clear = QtWidgets.QHBoxLayout()
