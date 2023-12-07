@@ -54,19 +54,26 @@ class UserInterface(QtWidgets.QMainWindow):
 
         fit_peaks_btn = QtWidgets.QPushButton("Fit Peaks")
         grid_buttons.addWidget(fit_peaks_btn, 1, 0)
-        fit_peaks_btn = QtWidgets.QPushButton("Remove Fit Peaks")
-        grid_buttons.addWidget(fit_peaks_btn, 1, 1)
+        remove_fit_peaks_btn = QtWidgets.QPushButton("Remove Fit Peaks")
+        grid_buttons.addWidget(remove_fit_peaks_btn, 1, 1)
 
         vbox_menu.addWidget(QtWidgets.QLabel("Analysis Log"))
         self.analysis_log = QtWidgets.QTextEdit()
         self.analysis_log.setReadOnly(True)
         vbox_menu.addWidget(self.analysis_log)
+
+        hbox_clear = QtWidgets.QHBoxLayout()
+        vbox_menu.addLayout(hbox_clear)
         clear_analysis_log_btn = QtWidgets.QPushButton("Clear Log")
-        vbox_menu.addWidget(clear_analysis_log_btn)
+        hbox_clear.addWidget(clear_analysis_log_btn)
+        clear_analysis_plot_btn = QtWidgets.QPushButton("Clear Plot")
+        hbox_clear.addWidget(clear_analysis_plot_btn)
 
         open_btn.clicked.connect(self.open_file)
         clear_analysis_log_btn.clicked.connect(self.clear_analysis_log)
+        clear_analysis_plot_btn.clicked.connect(self.clear_analysis_plot)
         remove_peaks_btn.clicked.connect(self.remove_points)
+        remove_fit_peaks_btn.clicked.connect(self.remove_vlines)
         detect_peaks_btn.clicked.connect(self.plot_peaks)
         fit_peaks_btn.clicked.connect(self.plot_fit_peaks)
 
@@ -98,11 +105,16 @@ class UserInterface(QtWidgets.QMainWindow):
         self.calibration_log = QtWidgets.QTextEdit()
         self.calibration_log.setReadOnly(True)
         vbox_menu.addWidget(self.calibration_log)
+        hbox_clear = QtWidgets.QHBoxLayout()
+        vbox_menu.addLayout(hbox_clear)
         clear_calibration_log_btn = QtWidgets.QPushButton("Clear Log")
-        vbox_menu.addWidget(clear_calibration_log_btn)
+        hbox_clear.addWidget(clear_calibration_log_btn)
+        clear_calibration_plot_btn = QtWidgets.QPushButton("Clear Plot")
+        hbox_clear.addWidget(clear_calibration_plot_btn)
 
         open_btn.clicked.connect(self.open_file)
         clear_calibration_log_btn.clicked.connect(self.clear_calibration_log)
+        clear_calibration_plot_btn.clicked.connect(self.clear_calibration_plot)
 
     @Slot()
     def clear_analysis_log(self):
@@ -111,6 +123,16 @@ class UserInterface(QtWidgets.QMainWindow):
     @Slot()
     def clear_calibration_log(self):
         self.calibration_log.clear()
+
+    @Slot()
+    def clear_analysis_plot(self):
+        self.plot_widget_analyze.clear()
+        self.analysis_log.append("Cleared the plot.")
+
+    @Slot()
+    def clear_calibration_plot(self):
+        self.plot_widget_calibrate.clear()
+        self.calibration_log.append("Cleared the plot.")
 
     @Slot()
     def open_file(self):
