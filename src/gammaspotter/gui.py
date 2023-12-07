@@ -105,6 +105,7 @@ class UserInterface(QtWidgets.QMainWindow):
         self.calibration_log = QtWidgets.QTextEdit()
         self.calibration_log.setReadOnly(True)
         vbox_menu.addWidget(self.calibration_log)
+
         hbox_clear = QtWidgets.QHBoxLayout()
         vbox_menu.addLayout(hbox_clear)
         clear_calibration_log_btn = QtWidgets.QPushButton("Clear Log")
@@ -192,7 +193,24 @@ class UserInterface(QtWidgets.QMainWindow):
 
     @Slot()
     def plot_fit_peaks(self):
-        pass
+        try:
+            for vline in self.vlines:
+                self.plot_widget_analyze.removeItem(vline)
+        except:
+            pass
+        try:
+            fit_peaks_x = self.process_data_analyze.fit_peaks(
+                domain_width=10, prominence=self.peak_sens_spin.value()
+            )
+        except:
+            self.analysis_log.append("No data has been loaded.")
+            return
+        self.analysis_log.append(f"Fitted {len(fit_peaks_x)} peaks:\n{fit_peaks_x}")
+        self.vlines = []
+        for x_peak in fit_peaks_x:
+            vline = pg.InfiniteLine(pos=x_peak, label=f"{round(x_peak, 1)}")
+            self.vlines.append(vline)
+            self.plot_widget_analyze.addItem(vline)
 
     @Slot()
     def remove_points(self):
@@ -201,6 +219,15 @@ class UserInterface(QtWidgets.QMainWindow):
             self.analysis_log.append("Points have been removed.")
         except:
             self.analysis_log.append("There are no points to remove.")
+
+    @Slot()
+    def remove_vlines(self):
+        try:
+            for vline in self.vlines:
+                self.plot_widget_analyze.removeItem(vline)
+            self.analysis_log.append("Peak fit lines have been removed.")
+        except:
+            self.analysis_log.append("There are no lines to remove.")
 
     def plot_vline(self, data_feature):
         for x_peak in data_feature:
