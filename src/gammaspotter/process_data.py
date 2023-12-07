@@ -17,14 +17,14 @@ class ProcessData:
         """
         return self.data[:-4]
 
-    def find_gamma_peaks(self, width, prominence) -> pd.DataFrame:
+    def find_gamma_peaks(self, prominence) -> pd.DataFrame:
         """Detect peaks in the gamma spectrum and return their positions in the graph.
 
         Returns:
             pd.DataFrame: The x and y coordinates of the detected peaks.
         """
         y = self.data.iloc[:, 1]
-        peaks, _ = find_peaks(y, width=width, prominence=prominence)
+        peaks, _ = find_peaks(y, prominence=prominence)
         peak_positions = self.data.index[peaks]
 
         x_peaks = self.data.iloc[:, 0][peak_positions]

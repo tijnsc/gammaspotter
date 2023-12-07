@@ -5,6 +5,7 @@ import pyqtgraph as pg
 import pandas as pd
 
 from PySide6.QtCore import Slot
+import numpy as np
 
 from gammaspotter.process_data import ProcessData
 
@@ -46,21 +47,30 @@ class UserInterface(QtWidgets.QMainWindow):
         filename, _ = QtWidgets.QFileDialog.getOpenFileName(filter="CSV files (*.csv)")
         if filename:
             self.plot_widget.clear()
+            self.plot_widget.setLabel("left", "Counts")
+            self.plot_widget.setLabel("bottom", "Energy")
+
             opened_file = pd.read_csv(filename)
-
             self.process_data = ProcessData(opened_file)
-            
-            current_data = self.process_data.data
-            self.energy = current_data.iloc[:, 0]
-            self.counts = current_data.iloc[:, 1]
-            self.plot()
 
-    def plot(self):
-        self.plot_widget.plot(
-            x=self.energy, y=self.counts, symbol=None, pen={"color": "w", "width": 5}
+            current_data = self.process_data.data
+            self.plot(x=current_data.iloc[:, 0], y=current_data.iloc[:, 1])
+
+    @Slot()
+    def detect_peaks(self):
+        peaks_data = self.process_data.find_gamma_peaks(
+            prominence=self.peak_sens_spin.value()
         )
-        self.plot_widget.setLabel("left", "Counts")
-        self.plot_widget.setLabel("bottom", "Energy")
+        self.plot(x=peaks_data.iloc[:, 0], y=peaks_data.iloc[:, 1])
+
+    def plot(self, x, y):
+        self.plot_widget.plot(
+            x=np.array(x), y=np.array(y), symbol=None, pen={"color": "w", "width": 5}
+        )
+
+    def plot_vline(self, data_feature):
+        for x_peak in data_feature:
+            self.plot_widget.InfiniteLine(pos=x_peak)
 
 
 def main():
