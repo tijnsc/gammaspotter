@@ -44,14 +44,18 @@ class UserInterface(QtWidgets.QMainWindow):
         self.peak_sens_spin.setValue(100)
         form.addRow("Peak detection sensitivity", self.peak_sens_spin)
 
-        hbox_peaks = QtWidgets.QHBoxLayout()
-        form.addRow(hbox_peaks)
+        grid_buttons = QtWidgets.QGridLayout()
+        form.addRow(grid_buttons)
 
         detect_peaks_btn = QtWidgets.QPushButton("Detect Peaks")
-        hbox_peaks.addWidget(detect_peaks_btn)
+        grid_buttons.addWidget(detect_peaks_btn, 0, 0)
+        remove_peaks_btn = QtWidgets.QPushButton("Remove Detected Peaks")
+        grid_buttons.addWidget(remove_peaks_btn, 0, 1)
 
-        remove_peaks_btn = QtWidgets.QPushButton("Remove Peaks")
-        hbox_peaks.addWidget(remove_peaks_btn)
+        fit_peaks_btn = QtWidgets.QPushButton("Fit Peaks")
+        grid_buttons.addWidget(fit_peaks_btn, 1, 0)
+        fit_peaks_btn = QtWidgets.QPushButton("Remove Fit Peaks")
+        grid_buttons.addWidget(fit_peaks_btn, 1, 1)
 
         vbox_menu.addWidget(QtWidgets.QLabel("Analysis Log"))
         self.analysis_log = QtWidgets.QTextEdit()
@@ -62,8 +66,9 @@ class UserInterface(QtWidgets.QMainWindow):
 
         open_btn.clicked.connect(self.open_file)
         clear_analysis_log_btn.clicked.connect(self.clear_analysis_log)
-        detect_peaks_btn.clicked.connect(self.plot_peaks)
         remove_peaks_btn.clicked.connect(self.remove_points)
+        detect_peaks_btn.clicked.connect(self.plot_peaks)
+        fit_peaks_btn.clicked.connect(self.plot_fit_peaks)
 
     def setup_calibrate_tab(self):
         hbox_main = QtWidgets.QHBoxLayout(self.calibrate_tab)
@@ -162,6 +167,10 @@ class UserInterface(QtWidgets.QMainWindow):
         self.analysis_log.append(
             f"Detected {len(peaks_data)} peaks:\n{peaks_data.to_markdown(index=False, tablefmt='plain', headers=['Energy', 'Counts'])}"
         )
+
+    @Slot()
+    def plot_fit_peaks(self):
+        pass
 
     @Slot()
     def remove_points(self):
