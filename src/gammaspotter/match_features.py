@@ -1,5 +1,5 @@
-import numpy
-     
+import numpy as np
+from scipy.special import erfc
 
 
 def matcher(found_energy_sigma_list, energy_list):
@@ -12,29 +12,18 @@ def matcher(found_energy_sigma_list, energy_list):
             source_name = energy[0]
             energy_value = energy[1]
             sigma_source = abs(energy_value - found_energy) / sigma
-            output_list.append([peak_nr ,source_name, sigma_source])
+            output_list.append([peak_nr, source_name, sigma_source])
         peak_nr += 1
-       
-    
+
+
+def sigma_changer(sigma_source):
+    x = sigma_source
+    percentage = erfc(x / np.sqrt(2))
+    return percentage
+
 
 if __name__ == "__main__":
     list_1 = [[1475.5, 15], [511, 5]]
     list_2 = [["Na-22", 1480], ["Cs-137", 500]]
     matcher(list_1, list_2)
-
-    
-    
-
-    
-        
-        
-
-
-
-
-
-
-
-
-
-
+    print(sigma_changer(1))
