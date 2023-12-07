@@ -88,35 +88,36 @@ class ProcessData:
         )
         return result
 
-    def fit_peaks(self, domain_width: float) -> list:
+    def fit_peaks(self, domain_width: float, prominence: int) -> list:
         """Takes raw spectrum data and performs a gaussian model fit on domains of the roughly detected peaks.
         This function returns more accurate peak positions than 'find_gamma_peaks'.
 
         Args:
             domain_width (float): width of the domains generated for analysis
+            prominence (int): sensitivity of the peak detection
 
         Returns:
-            list: results of the gaussian fits
+            list: x-values of fitted peaks
         """
-        peaks = self.find_gamma_peaks([3, 6], 200)
+        peaks = self.find_gamma_peaks(prominence=prominence)
         peaks_x = peaks.iloc[:, 0]
         peaks_y = peaks.iloc[:, 1]
 
         domains = self.isolate_domains(centers=peaks_x, width=domain_width)
 
-        fit_results = []
+        x_positions = []
         for index, domain in enumerate(domains):
             result = self.fit_gauss(
                 data=domain,
                 amp=peaks_y.values[index],
                 cen=peaks_x.values[index],
-                wid=10,
-                startheight=10,
+                wid=domain_width,
+                startheight=domain.iloc[:,1].min(),
             )
 
-            fit_results.append(result)
+            x_positions.append(result.values["cen"])
 
-        return fit_results
+        return x_positions
 
     def calibrate(self, known_energies: list[float]) -> tuple[float]:
         detected_peak_fit = []
