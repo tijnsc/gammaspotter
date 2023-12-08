@@ -14,50 +14,37 @@ class MatchFeatures:
             self.catalog = catalog_path
 
         catalog_data = pd.read_csv(self.catalog)
-        catalog_energy_list = catalog_data.iloc[:, [1, 0]].values.tolist()
-        self.catalog_energy_list = catalog_energy_list
+        catalog_isotopes = catalog_data.iloc[:, [0, 1]].values.tolist()
+        self.catalog_isotopes = catalog_isotopes
 
-    def match_isotopes(self) -> list:
+    def match_isotopes(self) -> pd.DataFrame:
         """Function for matching the found gamma peaks with the literature energies.
 
         Returns:
-            list: A sorted list of possible sources.
+            pd.DataFrame: A sorted DataFrame of possible sources.
         """
         output_list = []
-        sorted_list = []
         peak_nr = 1
 
         # looping every known source by every peak for finding all the sigmas
-        for found_energy_sigma in self.data_peaks:
-            for energy in self.catalog_energy_list:
+        for found_isotope in self.data_peaks.itertuples(index=False):
+            for catalog_isotope in self.catalog_isotopes:
                 sigma_source = (
-                    abs(energy[1] - found_energy_sigma[0]) / found_energy_sigma[1]
+                    abs(catalog_isotope[0] - found_isotope[0]) / found_isotope[1]
                 )
-                output_list.append(
-                    [peak_nr, energy[0], self.sigma_changer(sigma_source)]
-                )
+                percentage_match = self.sigma_changer(sigma_source)
+                if percentage_match > 0:
+                    output_list.append([peak_nr, catalog_isotope[1], percentage_match])
             peak_nr += 1
 
-        start = 0
-        count = 0
-        peak_iterator = 1
-
-        # loop for sorting the list by every peak
-        for peak in output_list:
-            if peak[0] is not peak_iterator:
-                sorted_cut_list = sorted(
-                    output_list[start:count], reverse=True, key=lambda x: x[2]
-                )
-                sorted_list += sorted_cut_list
-                start = count
-                peak_iterator += 1
-            count += 1
-        sorted_cut_list = sorted(
-            output_list[start:count], reverse=True, key=lambda x: x[2]
+        output_df = pd.DataFrame(
+            output_list, columns=["Peak Number", "Isotope", "Percentage"]
         )
-        sorted_list += sorted_cut_list
+        sorted_df = output_df.sort_values(
+            by=["Peak Number", "Percentage"], ascending=[True, False]
+        )
 
-        return sorted_list
+        return sorted_df
 
     def sigma_changer(self, sigma_source):
         """Function fo changing the sigma in to a percentage.
@@ -68,19 +55,20 @@ class MatchFeatures:
         Returns:
             float: Percentage of the given sigma.
         """
-        return erfc(sigma_source / sqrt(2)) * 100
+        return round(erfc(sigma_source / 5 * sqrt(2)) * 100, 2)
 
 
 if __name__ == "__main__":
-    list_1 = [[1475.5, 15], [511, 5], [200, 20]]
-    cat = [
-        ["Na-22", 1274.5],
-        ["Cs-137", 661.64],
-        ["Ba-133", 356],
-        ["Co-60", 1173.2],
-        ["Co-60", 1332.5],
-        ["K-40", 1460],
-    ]
-    print(MatchFeatures(list_1).match_isotopes())
+    # list_1 = [[1475.5, 15], [511, 5], [200, 20]]
+    # cat = [
+    #     ["Na-22", 1274.5],
+    #     ["Cs-137", 661.64],
+    #     ["Ba-133", 356],
+    #     ["Co-60", 1173.2],
+    #     ["Co-60", 1332.5],
+    #     ["K-40", 1460],
+    # ]
+    # print(MatchFeatures(list_1).match_isotopes())
 
     # MatchFeatures(list_1)
+    pass
