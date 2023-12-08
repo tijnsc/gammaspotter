@@ -160,6 +160,7 @@ class UserInterface(QtWidgets.QMainWindow):
 
     @Slot()
     def open_file(self):
+        """Function for oping a file in to the application. It is possible to open two different files in the two tabs."""
         filename, _ = QtWidgets.QFileDialog.getOpenFileName(filter="CSV files (*.csv)")
         if filename:
             opened_file = pd.read_csv(filename)
@@ -193,6 +194,7 @@ class UserInterface(QtWidgets.QMainWindow):
 
     @Slot()
     def plot_peaks(self):
+        """Function for finding the peaks in the plot."""
         try:
             self.plot_widget_analyze.removeItem(self.peaks_scatter)
         except:
