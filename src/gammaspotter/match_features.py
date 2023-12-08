@@ -1,17 +1,24 @@
 import numpy as np
 from scipy.special import erfc
+import pandas as pd
 
 
 class MatchFeatures:
-    def __init__(self):
-        pass
+    def __init__(self, data_peaks: pd.DataFrame, catalog_path: str = None):
+        self.data_peaks = data_peaks
 
-    def matcher(self, found_energy_sigma_list, energy_list):
-        """Function for matching the peaks with the sources.
+        if catalog_path is None:
+            # use built in catalog
+            self.catalog = "catalogs/gamma-energies.csv"
+        else:
+            self.catalog = catalog_path
 
-        Args:
-            found_energy_sigma_list (list): List of found peaks with error(sigma).
-            energy_list (list): List of known sources with the known energys.
+        catalog_data = pd.read_csv(self.catalog)
+        catalog_energy_list = catalog_data.iloc[:, [1, 0]].values.tolist()
+        self.catalog_energy_list = catalog_energy_list
+
+    def matcher(self):
+        """Function for matching the found gamma peaks with the literature energies.
 
         Returns:
             list: A sorted list of possible sources.
@@ -21,8 +28,8 @@ class MatchFeatures:
         peak_nr = 1
 
         # looping every known source by every peak for finding all the sigmas
-        for found_energy_sigma in found_energy_sigma_list:
-            for energy in energy_list:
+        for found_energy_sigma in self.data_peaks:
+            for energy in self.catalog_energy_list:
                 sigma_source = (
                     abs(energy[1] - found_energy_sigma[0]) / found_energy_sigma[1]
                 )
@@ -67,7 +74,7 @@ class MatchFeatures:
 
 if __name__ == "__main__":
     list_1 = [[1475.5, 15], [511, 5], [200, 20]]
-    list_2 = [
+    cat = [
         ["Na-22", 1274.5],
         ["Cs-137", 661.64],
         ["Ba-133", 356],
@@ -75,4 +82,6 @@ if __name__ == "__main__":
         ["Co-60", 1332.5],
         ["K-40", 1460],
     ]
-    print(MatchFeatures().matcher(list_1, list_2))
+    print(MatchFeatures(list_1).matcher())
+
+    # MatchFeatures(list_1)
