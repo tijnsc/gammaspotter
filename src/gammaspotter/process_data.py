@@ -121,6 +121,18 @@ class ProcessData:
         return x_positions_df
 
     def calibrate(self, known_energies: list[float]) -> tuple[float]:
+        """Function for making the calibration so the plot is given in keV and not in mV or any other unit.
+
+        Args:
+            known_energies (list[float]): list of energies that correspond with a known source
+
+        Raises:
+            Exception: when there occures an error it tells you to use a different measurement
+
+        Returns:
+            scaling_factor[float]: how much the two peaks need to be scaled for them to have the right distance between them
+            horizontal_offset[float]: how far the two peaks need to be moved so they line up with the known energies in keV
+        """
         detected_peak_fit = []
         results = self.fit_peaks(width=10)
         for result in results:
