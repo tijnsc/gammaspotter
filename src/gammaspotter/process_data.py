@@ -75,7 +75,8 @@ class ProcessData:
         x = data.iloc[:, 0]
         y = data.iloc[:, 1]
         result = lmfit_model.fit(
-            y, x=x, amp=amp, cen=cen, wid=wid, startheight=startheight
+            # TODO: remove this hacky fix
+            y, x=x, amp=amp + 4000, cen=cen, wid=wid, startheight=startheight
         )
         return result
 
