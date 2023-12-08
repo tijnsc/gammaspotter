@@ -7,24 +7,17 @@ from statistics import mean
 
 class ProcessData:
     def __init__(self, data: pd.DataFrame) -> None:
-        self.data = data
+        # remove last four rows of data to remove edge effect from out of range binning
+        self.data = data[:-4]
 
-    def remove_edge_effect(self) -> pd.DataFrame:
-        """Remove the last four rows of a dataframe to remove an edge effect from out of range binning.
-
-        Returns:
-            pd.DataFrame: Data without last four columns.
-        """
-        return self.data[:-4]
-
-    def find_gamma_peaks(self, width, prominence) -> pd.DataFrame:
+    def find_gamma_peaks(self, prominence) -> pd.DataFrame:
         """Detect peaks in the gamma spectrum and return their positions in the graph.
 
         Returns:
             pd.DataFrame: The x and y coordinates of the detected peaks.
         """
         y = self.data.iloc[:, 1]
-        peaks, _ = find_peaks(y, width=width, prominence=prominence)
+        peaks, _ = find_peaks(y, prominence=prominence)
         peak_positions = self.data.index[peaks]
 
         x_peaks = self.data.iloc[:, 0][peak_positions]
@@ -39,15 +32,13 @@ class ProcessData:
 
         return peaks_data
 
-    def isolate_domains(
-        self, centers: list[float], width: float = 10
-    ) -> list[pd.DataFrame]:
+    def isolate_domains(self, centers: list[float], width: float) -> list[pd.DataFrame]:
         """Creates subset dataframes from the input data which contain a domain of given width around specified center values,
            useful for isolating peaks in spectra.
 
         Args:
             centers (list[float]): x-values around which the domains should be generated.
-            width (float, optional): Width of the generated DataFrames iwth a defaults of 10.
+            width (float, optional): Width of the generated DataFrames.
 
         Returns:
             list[pd.DataFrame]: List containing generated DataFrames.
@@ -88,35 +79,45 @@ class ProcessData:
         )
         return result
 
-    def fit_peaks(self, domain_width: float) -> list:
+    def fit_peaks(self, domain_width: float, prominence: int) -> pd.DataFrame:
         """Takes raw spectrum data and performs a gaussian model fit on domains of the roughly detected peaks.
         This function returns more accurate peak positions than 'find_gamma_peaks'.
 
         Args:
             domain_width (float): width of the domains generated for analysis
+            prominence (int): sensitivity of the peak detection
 
         Returns:
-            list: results of the gaussian fits
+            pd.DataFrame: x-values of fitted peaks with uncertainties
         """
-        peaks = self.find_gamma_peaks([3, 6], 200)
+        peaks = self.find_gamma_peaks(prominence=prominence)
         peaks_x = peaks.iloc[:, 0]
         peaks_y = peaks.iloc[:, 1]
 
         domains = self.isolate_domains(centers=peaks_x, width=domain_width)
 
-        fit_results = []
+        x_positions = []
+        x_positions_std = []
         for index, domain in enumerate(domains):
             result = self.fit_gauss(
                 data=domain,
                 amp=peaks_y.values[index],
                 cen=peaks_x.values[index],
-                wid=10,
-                startheight=10,
+                wid=domain_width,
+                startheight=domain.iloc[:, 1].min(),
             )
 
-            fit_results.append(result)
+            x_positions.append(result.values["cen"])
+            x_positions_std.append(result.params["cen"].stderr)
 
-        return fit_results
+        x_positions_df = pd.DataFrame(
+            {
+                "energy": x_positions,
+                "stderr": x_positions_std,
+            }
+        )
+
+        return x_positions_df
 
     def calibrate(self, known_energies: list[float]) -> tuple[float]:
         detected_peak_fit = []
