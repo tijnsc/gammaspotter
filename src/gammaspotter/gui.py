@@ -288,7 +288,8 @@ class UserInterface(QtWidgets.QMainWindow):
     def find_isotopes(self):
         mf = MatchFeatures(self.fit_peaks_x)
         matches = mf.match_isotopes()
-        print(matches)
+        for index in range(len(self.fit_peaks_x)):
+            print(matches[matches.iloc[:, 0] == index + 1].iloc[:5, 1:3])
 
 
 def main():
