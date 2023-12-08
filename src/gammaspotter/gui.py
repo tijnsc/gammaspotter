@@ -6,6 +6,7 @@ import pandas as pd
 
 from PySide6.QtCore import Slot
 from gammaspotter.process_data import ProcessData
+from gammaspotter.match_features import MatchFeatures
 
 
 class UserInterface(QtWidgets.QMainWindow):
