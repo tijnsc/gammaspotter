@@ -1,4 +1,4 @@
-import numpy as np
+from math import sqrt
 from scipy.special import erfc
 import pandas as pd
 
@@ -40,22 +40,22 @@ class MatchFeatures:
 
         start = 0
         count = 0
-        number = 1
+        peak_id = 1
 
         # loop for sorting the list by every peak
         for peak in output_list:
-            if not peak[0] == number:
+            if peak[0] is not peak_id:
                 sorted_cut_list = sorted(
                     output_list[start:count], reverse=True, key=lambda x: x[2]
                 )
-                sorted_list = sorted_list + sorted_cut_list
+                sorted_list += sorted_cut_list
                 start = count
-                number += 1
+                peak_id += 1
             count += 1
         sorted_cut_list = sorted(
             output_list[start:count], reverse=True, key=lambda x: x[2]
         )
-        sorted_list = sorted_list + sorted_cut_list
+        sorted_list += sorted_cut_list
 
         return sorted_list
 
@@ -68,8 +68,7 @@ class MatchFeatures:
         Returns:
             float: Percentage of the given sigma.
         """
-        percentage = erfc(sigma_source / np.sqrt(2)) * 100
-        return percentage
+        return erfc(sigma_source / sqrt(2)) * 100
 
 
 if __name__ == "__main__":
