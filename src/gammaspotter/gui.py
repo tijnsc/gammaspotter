@@ -218,6 +218,7 @@ class UserInterface(QtWidgets.QMainWindow):
 
     @Slot()
     def plot_fit_peaks(self):
+        """Function for fitting the peaks to a gaussian function for finding a more accurate peak and showing this in the plot."""
         try:
             for vline in self.vlines:
                 self.plot_widget_analyze.removeItem(vline)
