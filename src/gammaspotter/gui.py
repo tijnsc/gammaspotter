@@ -63,6 +63,9 @@ class UserInterface(QtWidgets.QMainWindow):
         remove_fit_peaks_btn = QtWidgets.QPushButton("Remove Fit Peaks")
         grid_buttons.addWidget(remove_fit_peaks_btn, 1, 1)
 
+        find_isotopes_btn = QtWidgets.QPushButton("Find Isotopes")
+        form.addRow(find_isotopes_btn)
+
         vbox_menu.addWidget(QtWidgets.QLabel("Analysis Log"))
         self.analysis_log = QtWidgets.QTextEdit()
         self.analysis_log.setReadOnly(True)
@@ -85,6 +88,7 @@ class UserInterface(QtWidgets.QMainWindow):
         remove_fit_peaks_btn.clicked.connect(self.remove_vlines)
         detect_peaks_btn.clicked.connect(self.plot_peaks)
         fit_peaks_btn.clicked.connect(self.plot_fit_peaks)
+        find_isotopes_btn.clicked.connect(self.find_isotopes)
 
     def setup_calibrate_tab(self):
         hbox_main = QtWidgets.QHBoxLayout(self.calibrate_tab)
@@ -222,7 +226,7 @@ class UserInterface(QtWidgets.QMainWindow):
         except:
             pass
         try:
-            fit_peaks_x = self.process_data_analyze.fit_peaks(
+            self.fit_peaks_x = self.process_data_analyze.fit_peaks(
                 domain_width=self.domain_width_spin.value(),
                 prominence=self.peak_thresh_spin.value(),
             )
@@ -231,13 +235,13 @@ class UserInterface(QtWidgets.QMainWindow):
             return
 
         self.vlines = []
-        for x_peak in fit_peaks_x.iloc[:, 0]:
+        for x_peak in self.fit_peaks_x.iloc[:, 0]:
             vline = pg.InfiniteLine(pos=x_peak, label=f"{round(x_peak, 1)}")
             self.vlines.append(vline)
             self.plot_widget_analyze.addItem(vline)
 
         self.analysis_log.append(
-            f"Fitted {len(fit_peaks_x)} peaks:\n{fit_peaks_x.to_markdown(index=False, tablefmt='plain', headers=['Energy', 'Standard Error'])}\n"
+            f"Fitted {len(self.fit_peaks_x)} peaks:\n{self.fit_peaks_x.to_markdown(index=False, tablefmt='plain', headers=['Energy', 'Standard Error'])}\n"
         )
 
     @Slot()
@@ -258,6 +262,7 @@ class UserInterface(QtWidgets.QMainWindow):
             self.analysis_log.append("There are no lines to remove.\n")
 
     # maybe move this to model
+    @Slot()
     def detect_cal_peaks(self):
         """Find the six most prominent peaks in the calibration spectrum."""
         found_peaks_count = 10000
@@ -278,6 +283,12 @@ class UserInterface(QtWidgets.QMainWindow):
         self.calibration_log.append(
             f"Detected {len(found_peaks)} peaks:\n{found_peaks.to_markdown(index=False, tablefmt='plain', headers=['Energy', 'Counts'])}\n"
         )
+
+    @Slot()
+    def find_isotopes(self):
+        mf = MatchFeatures(self.fit_peaks_x)
+        matches = mf.match_isotopes()
+        print(matches)
 
 
 def main():

@@ -17,7 +17,7 @@ class MatchFeatures:
         catalog_energy_list = catalog_data.iloc[:, [1, 0]].values.tolist()
         self.catalog_energy_list = catalog_energy_list
 
-    def matcher(self):
+    def match_isotopes(self) -> list:
         """Function for matching the found gamma peaks with the literature energies.
 
         Returns:
@@ -40,17 +40,17 @@ class MatchFeatures:
 
         start = 0
         count = 0
-        peak_id = 1
+        peak_iterator = 1
 
         # loop for sorting the list by every peak
         for peak in output_list:
-            if peak[0] is not peak_id:
+            if peak[0] is not peak_iterator:
                 sorted_cut_list = sorted(
                     output_list[start:count], reverse=True, key=lambda x: x[2]
                 )
                 sorted_list += sorted_cut_list
                 start = count
-                peak_id += 1
+                peak_iterator += 1
             count += 1
         sorted_cut_list = sorted(
             output_list[start:count], reverse=True, key=lambda x: x[2]
@@ -81,6 +81,6 @@ if __name__ == "__main__":
         ["Co-60", 1332.5],
         ["K-40", 1460],
     ]
-    print(MatchFeatures(list_1).matcher())
+    print(MatchFeatures(list_1).match_isotopes())
 
     # MatchFeatures(list_1)
