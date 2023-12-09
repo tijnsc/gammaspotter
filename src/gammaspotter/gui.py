@@ -158,6 +158,9 @@ class UserInterface(QtWidgets.QMainWindow):
         vbox_menu.addWidget(QtWidgets.QLabel("Helpdesk"))
         self.help_log = QtWidgets.QTextEdit()
         self.help_log.setReadOnly(True)
+        self.help_log.append("This is a helpdesk for if you find yourself having problems with the program.\n"
+                             ""
+                             )
         vbox_menu.addWidget(self.help_log)
 
     @Slot()
@@ -195,7 +198,15 @@ class UserInterface(QtWidgets.QMainWindow):
         self.help_log.clear()
         self.help_log.append(
             "On the right hand side of the application you can see an 'Open Measurement' button.\n"
-            "This is where you can choose witch measurement you want to use.\n"
+            "This is where you can choose witch measurement you want to use.\n\n"
+
+            "Right under the burron there is a changable box 'Peak detection treshold'"
+            "This determines how sensitive the program is with finding the peaks.\n"
+            "When the threshold is set higher it will find less peaks.\n\n"
+
+            "Under the treshold there is a changable box 'Fit domain width'.\n"
+            "You can change how wide you want to fit over the found peaks.\n\n"
+
         )
 
     @Slot()
