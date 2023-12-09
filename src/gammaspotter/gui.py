@@ -62,8 +62,8 @@ class UserInterface(QtWidgets.QMainWindow):
         self.fit_button = QtWidgets.QPushButton("Fit")
         form.addRow(self.fit_button)
 
-        find_isotopes_btn = QtWidgets.QPushButton("Find Isotopes")
-        form.addRow(find_isotopes_btn)
+        self.find_isotopes_btn = QtWidgets.QPushButton("Find Isotopes")
+        form.addRow(self.find_isotopes_btn)
 
         vbox_menu.addWidget(QtWidgets.QLabel("Analysis Log"))
         self.analysis_log = QtWidgets.QTextEdit()
@@ -77,14 +77,16 @@ class UserInterface(QtWidgets.QMainWindow):
         vbox_menu.addLayout(hbox_clear)
         clear_analysis_log_btn = QtWidgets.QPushButton("Clear Log")
         hbox_clear.addWidget(clear_analysis_log_btn)
-        clear_analysis_plot_btn = QtWidgets.QPushButton("Clear Plot")
-        hbox_clear.addWidget(clear_analysis_plot_btn)
+        clear_analysis_data_btn = QtWidgets.QPushButton("Clear Data")
+        hbox_clear.addWidget(clear_analysis_data_btn)
+
+        self.show_analysis_funcs(False)
 
         open_btn.clicked.connect(self.open_file)
         self.fit_button.clicked.connect(self.fit_plot)
         clear_analysis_log_btn.clicked.connect(self.clear_analysis_log)
-        clear_analysis_plot_btn.clicked.connect(self.clear_analysis_plot)
-        find_isotopes_btn.clicked.connect(self.find_isotopes)
+        clear_analysis_data_btn.clicked.connect(self.clear_analysis_data)
+        self.find_isotopes_btn.clicked.connect(self.find_isotopes)
 
     def setup_calibrate_tab(self):
         hbox_main = QtWidgets.QHBoxLayout(self.calibrate_tab)
@@ -129,6 +131,18 @@ class UserInterface(QtWidgets.QMainWindow):
         find_peaks_btn.clicked.connect(self.detect_cal_peaks)
         clear_calibration_log_btn.clicked.connect(self.clear_calibration_log)
         clear_calibration_plot_btn.clicked.connect(self.clear_calibration_plot)
+
+    def show_analysis_funcs(self, action: bool):
+        # self.analysis_show = action
+        widgets = [
+            self.fit_checkbox,
+            self.peaks_checkbox,
+            self.peak_thresh_spin,
+            self.domain_width_spin,
+            self.find_isotopes_btn,
+        ]
+        for widget in widgets:
+            widget.setEnabled(action)
 
     def setup_help_tab(self):
         vbox_main = QtWidgets.QVBoxLayout(self.help_tab)
@@ -177,14 +191,15 @@ class UserInterface(QtWidgets.QMainWindow):
             self.remove_vlines()
 
     @Slot()
-    def clear_analysis_plot(self):
+    def clear_analysis_data(self):
         try:
             del self.process_data_analyze
         except:
             self.analysis_log.append("Nothing to clear.\n")
         else:
+            self.show_analysis_funcs(False)
             self.plot_widget_analyze.clear()
-            self.analysis_log.append("Cleared the plot.\n")
+            self.analysis_log.append("Cleared the data.\n")
 
     @Slot()
     def clear_calibration_plot(self):
@@ -209,6 +224,7 @@ class UserInterface(QtWidgets.QMainWindow):
                     self.process_data_analyze = ProcessData(opened_file)
                     latest_data = self.process_data_analyze
                     window_log = self.analysis_log
+                    self.show_analysis_funcs(True)
 
                 case 1:
                     plot_widget = self.plot_widget_calibrate
@@ -328,7 +344,6 @@ class UserInterface(QtWidgets.QMainWindow):
         for index in range(len(self.fit_peaks_x)):
             print(matches[matches.iloc[:, 0] == index + 1].iloc[:5, 1:3])
 
-    
     @Slot()
     def analyze_help(self):
         self.help_log.clear()
@@ -348,7 +363,6 @@ class UserInterface(QtWidgets.QMainWindow):
         self.help_log.append(
             "This is the information for helping with the calibrate tab."
         )
-
 
 
 def main():
