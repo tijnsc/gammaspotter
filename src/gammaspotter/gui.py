@@ -230,22 +230,20 @@ Dylan Telleman and Tijn Schuitevoerder
         try:
             del self.process_data_analyze
         except:
-            self.analysis_log.append("Nothing to clear.\n")
+            pass
         else:
             self.show_analysis_funcs(False)
             self.plot_widget_analyze.clear()
-            self.analysis_log.append("Cleared the data.\n")
 
     @Slot()
     def clear_calibration_data(self):
         try:
             del self.process_data_calibrate
         except:
-            self.calibration_log.append("Nothing to clear.\n")
+            pass
         else:
             self.show_calibrate_funcs(False)
             self.plot_widget_calibrate.clear()
-            self.calibration_log.append("Cleared the data.\n")
 
     @Slot()
     def send_to_analysis(self):
