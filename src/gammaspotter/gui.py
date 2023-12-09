@@ -256,14 +256,11 @@ class UserInterface(QtWidgets.QMainWindow):
             self.plot_widget_analyze.removeItem(self.peaks_scatter)
         except:
             pass
+
         if self.peaks_checkbox.isChecked():
-            try:
-                peaks_data = self.process_data_analyze.find_gamma_peaks(
-                    prominence=self.peak_thresh_spin.value()
-                )
-            except:
-                self.analysis_log.append("No data has been loaded.\n")
-                return
+            peaks_data = self.process_data_analyze.find_gamma_peaks(
+                prominence=self.peak_thresh_spin.value()
+            )
             self.peaks_scatter = pg.ScatterPlotItem(
                 size=15, brush=pg.mkBrush("r"), symbol="x"
             )
@@ -273,7 +270,7 @@ class UserInterface(QtWidgets.QMainWindow):
             self.plot_widget_analyze.addItem(self.peaks_scatter)
 
             self.analysis_log.append(
-                f"Detected {len(peaks_data)} peaks:\n{peaks_data.to_markdown(index=False, tablefmt='plain', headers=['Energy', 'Counts'])}\n"
+                f"DETECTED {len(peaks_data)} PEAKS:\n{peaks_data.to_markdown(index=False, tablefmt='plain', headers=['Energy', 'Counts'])}\n"
             )
 
     @Slot()
@@ -284,42 +281,27 @@ class UserInterface(QtWidgets.QMainWindow):
                 self.plot_widget_analyze.removeItem(vline)
         except:
             pass
+
         if self.fit_checkbox.isChecked():
             try:
                 self.fit_peaks_x = self.process_data_analyze.fit_peaks(
                     domain_width=self.domain_width_spin.value(),
                     prominence=self.peak_thresh_spin.value(),
                 )
-            except:
-                self.analysis_log.append("No data has been loaded.\n")
-                return
+            except TypeError:
+                self.analysis_log.append(
+                    "No peaks detected. Try lowering the peak detection threshold or adjusting the domain width.\n"
+                )
+            else:
+                self.vlines = []
+                for peak_nr, x_peak in enumerate(self.fit_peaks_x.iloc[:, 0]):
+                    vline = pg.InfiniteLine(pos=x_peak, label=f"{peak_nr + 1}")
+                    self.vlines.append(vline)
+                    self.plot_widget_analyze.addItem(vline)
 
-            self.vlines = []
-            for peak_nr, x_peak in enumerate(self.fit_peaks_x.iloc[:, 0]):
-                vline = pg.InfiniteLine(pos=x_peak, label=f"{peak_nr + 1}")
-                self.vlines.append(vline)
-                self.plot_widget_analyze.addItem(vline)
-
-            self.analysis_log.append(
-                f"Fitted {len(self.fit_peaks_x)} peaks:\n{self.fit_peaks_x.to_markdown(index=False, tablefmt='plain', headers=['Energy', 'Standard Error'])}\n"
-            )
-
-    @Slot()
-    def remove_points(self):
-        try:
-            self.plot_widget_analyze.removeItem(self.peaks_scatter)
-            self.analysis_log.append("Points have been removed.\n")
-        except:
-            self.analysis_log.append("There are no points to remove.\n")
-
-    @Slot()
-    def remove_vlines(self):
-        try:
-            for vline in self.vlines:
-                self.plot_widget_analyze.removeItem(vline)
-            self.analysis_log.append("Peak fit lines have been removed.\n")
-        except:
-            self.analysis_log.append("There are no lines to remove.\n")
+                self.analysis_log.append(
+                    f"FITTED {len(self.fit_peaks_x)} PEAKS:\n{self.fit_peaks_x.to_markdown(index=False, tablefmt='plain', headers=['Energy', 'Standard Error'])}\n"
+                )
 
     # maybe move this to model
     @Slot()
@@ -341,7 +323,7 @@ class UserInterface(QtWidgets.QMainWindow):
             self.plot_widget_calibrate.addItem(vline)
 
         self.calibration_log.append(
-            f"Detected {len(found_peaks)} peaks:\n{found_peaks.to_markdown(index=False, tablefmt='plain', headers=['Energy', 'Counts'])}\n"
+            f"DETECTED {len(found_peaks)} PEAKS:\n{found_peaks.to_markdown(index=False, tablefmt='plain', headers=['Energy', 'Counts'])}\n"
         )
 
     @Slot()
