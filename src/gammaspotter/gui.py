@@ -44,6 +44,7 @@ class UserInterface(QtWidgets.QMainWindow):
         form.addRow(open_btn)
 
         self.peak_thresh_spin = QtWidgets.QSpinBox()
+        self.peak_thresh_spin.setSingleStep(15)
         self.peak_thresh_spin.setRange(1, 1000000)
         self.peak_thresh_spin.setValue(100)
         form.addRow("Peak detection threshold", self.peak_thresh_spin)
@@ -52,6 +53,7 @@ class UserInterface(QtWidgets.QMainWindow):
         form.addRow("Show detected peaks", self.peaks_checkbox)
 
         self.domain_width_spin = QtWidgets.QSpinBox()
+        self.domain_width_spin.setSingleStep(5)
         self.domain_width_spin.setRange(1, 1000000)
         self.domain_width_spin.setValue(10)
         form.addRow("Fit domain width", self.domain_width_spin)
