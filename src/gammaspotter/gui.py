@@ -185,6 +185,11 @@ class UserInterface(QtWidgets.QMainWindow):
         for widget in widgets:
             widget.setEnabled(action)
 
+        # reset checkboxes to unchecked state
+        checkboxes = [self.fit_checkbox, self.peaks_checkbox]
+        for checkbox in checkboxes:
+            checkbox.setChecked(False)
+
     def show_calibrate_funcs(self, action: bool):
         widgets = [self.combo_isotope, self.find_peaks_btn, self.save_cal_btn]
         for widget in widgets:
