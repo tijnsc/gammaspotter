@@ -82,10 +82,17 @@ class UserInterface(QtWidgets.QMainWindow):
         self.show_analysis_funcs(False)
 
         open_btn.clicked.connect(self.open_file)
-        self.fit_button.clicked.connect(self.fit_plot)
+
+        self.peak_thresh_spin.valueChanged.connect(self.plot_peaks)
+        self.peaks_checkbox.stateChanged.connect(self.plot_peaks)
+
+        self.domain_width_spin.valueChanged.connect(self.plot_fit_peaks)
+        self.fit_checkbox.stateChanged.connect(self.plot_fit_peaks)
+
+        self.find_isotopes_btn.clicked.connect(self.find_isotopes)
+
         clear_analysis_log_btn.clicked.connect(self.clear_analysis_log)
         clear_analysis_data_btn.clicked.connect(self.clear_analysis_data)
-        self.find_isotopes_btn.clicked.connect(self.find_isotopes)
 
     def setup_calibrate_tab(self):
         hbox_main = QtWidgets.QHBoxLayout(self.calibrate_tab)
@@ -248,22 +255,25 @@ class UserInterface(QtWidgets.QMainWindow):
             self.plot_widget_analyze.removeItem(self.peaks_scatter)
         except:
             pass
-        try:
-            peaks_data = self.process_data_analyze.find_gamma_peaks(
-                prominence=self.peak_thresh_spin.value()
+        if self.peaks_checkbox.isChecked():
+            try:
+                peaks_data = self.process_data_analyze.find_gamma_peaks(
+                    prominence=self.peak_thresh_spin.value()
+                )
+            except:
+                self.analysis_log.append("No data has been loaded.\n")
+                return
+            self.peaks_scatter = pg.ScatterPlotItem(
+                size=15, brush=pg.mkBrush("r"), symbol="x"
             )
-        except:
-            self.analysis_log.append("No data has been loaded.\n")
-            return
-        self.peaks_scatter = pg.ScatterPlotItem(
-            size=15, brush=pg.mkBrush("r"), symbol="x"
-        )
-        self.peaks_scatter.addPoints(x=peaks_data.iloc[:, 0], y=peaks_data.iloc[:, 1])
-        self.plot_widget_analyze.addItem(self.peaks_scatter)
+            self.peaks_scatter.addPoints(
+                x=peaks_data.iloc[:, 0], y=peaks_data.iloc[:, 1]
+            )
+            self.plot_widget_analyze.addItem(self.peaks_scatter)
 
-        self.analysis_log.append(
-            f"Detected {len(peaks_data)} peaks:\n{peaks_data.to_markdown(index=False, tablefmt='plain', headers=['Energy', 'Counts'])}\n"
-        )
+            self.analysis_log.append(
+                f"Detected {len(peaks_data)} peaks:\n{peaks_data.to_markdown(index=False, tablefmt='plain', headers=['Energy', 'Counts'])}\n"
+            )
 
     @Slot()
     def plot_fit_peaks(self):
@@ -273,24 +283,25 @@ class UserInterface(QtWidgets.QMainWindow):
                 self.plot_widget_analyze.removeItem(vline)
         except:
             pass
-        try:
-            self.fit_peaks_x = self.process_data_analyze.fit_peaks(
-                domain_width=self.domain_width_spin.value(),
-                prominence=self.peak_thresh_spin.value(),
+        if self.fit_checkbox.isChecked():
+            try:
+                self.fit_peaks_x = self.process_data_analyze.fit_peaks(
+                    domain_width=self.domain_width_spin.value(),
+                    prominence=self.peak_thresh_spin.value(),
+                )
+            except:
+                self.analysis_log.append("No data has been loaded.\n")
+                return
+
+            self.vlines = []
+            for peak_nr, x_peak in enumerate(self.fit_peaks_x.iloc[:, 0]):
+                vline = pg.InfiniteLine(pos=x_peak, label=f"{peak_nr + 1}")
+                self.vlines.append(vline)
+                self.plot_widget_analyze.addItem(vline)
+
+            self.analysis_log.append(
+                f"Fitted {len(self.fit_peaks_x)} peaks:\n{self.fit_peaks_x.to_markdown(index=False, tablefmt='plain', headers=['Energy', 'Standard Error'])}\n"
             )
-        except:
-            self.analysis_log.append("No data has been loaded.\n")
-            return
-
-        self.vlines = []
-        for x_peak in self.fit_peaks_x.iloc[:, 0]:
-            vline = pg.InfiniteLine(pos=x_peak, label=f"{round(x_peak, 1)}")
-            self.vlines.append(vline)
-            self.plot_widget_analyze.addItem(vline)
-
-        self.analysis_log.append(
-            f"Fitted {len(self.fit_peaks_x)} peaks:\n{self.fit_peaks_x.to_markdown(index=False, tablefmt='plain', headers=['Energy', 'Standard Error'])}\n"
-        )
 
     @Slot()
     def remove_points(self):
