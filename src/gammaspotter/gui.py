@@ -40,7 +40,7 @@ class UserInterface(QtWidgets.QMainWindow):
         form = QtWidgets.QFormLayout()
         vbox_menu.addLayout(form)
 
-        open_btn = QtWidgets.QPushButton("Open Measurement")
+        open_btn = QtWidgets.QPushButton("Open calibrated data")
         form.addRow(open_btn)
 
         self.peak_thresh_spin = QtWidgets.QSpinBox()
@@ -127,8 +127,11 @@ class UserInterface(QtWidgets.QMainWindow):
         self.find_peaks_btn = QtWidgets.QPushButton("Find Peaks")
         form.addRow(self.find_peaks_btn)
 
-        self.save_cal_btn = QtWidgets.QPushButton("Save Calibrated Measurement")
+        self.save_cal_btn = QtWidgets.QPushButton("Save calibrated data")
         form.addRow(self.save_cal_btn)
+
+        self.send_to_analysis_btn = QtWidgets.QPushButton("Send data to analyze tab")
+        form.addRow(self.send_to_analysis_btn)
 
         line = QtWidgets.QFrame()
         line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -154,6 +157,8 @@ class UserInterface(QtWidgets.QMainWindow):
 
         open_btn.clicked.connect(self.open_file)
         self.find_peaks_btn.clicked.connect(self.detect_cal_peaks)
+        self.send_to_analysis_btn.clicked.connect(self.send_to_analysis)
+
         clear_calibration_log_btn.clicked.connect(self.clear_calibration_log)
         clear_calibration_data_btn.clicked.connect(self.clear_calibration_data)
 
@@ -203,7 +208,12 @@ Dylan Telleman and Tijn Schuitevoerder
             checkbox.setChecked(False)
 
     def show_calibrate_funcs(self, action: bool):
-        widgets = [self.combo_isotope, self.find_peaks_btn, self.save_cal_btn]
+        widgets = [
+            self.combo_isotope,
+            self.find_peaks_btn,
+            self.save_cal_btn,
+            self.send_to_analysis_btn,
+        ]
         for widget in widgets:
             widget.setEnabled(action)
 
@@ -236,6 +246,10 @@ Dylan Telleman and Tijn Schuitevoerder
             self.show_calibrate_funcs(False)
             self.plot_widget_calibrate.clear()
             self.calibration_log.append("Cleared the data.\n")
+
+    @Slot()
+    def send_to_analysis(self):
+        self.central_widget.setCurrentIndex(0)
 
     @Slot()
     def open_file(self):
