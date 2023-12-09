@@ -344,22 +344,26 @@ class UserInterface(QtWidgets.QMainWindow):
 
     @Slot()
     def find_isotopes(self):
-        mf = MatchFeatures(self.fit_peaks_x)
-        matches = mf.match_isotopes()
-        result_length = self.result_length_spin.value()
-        self.analysis_log.append("MATCHED PEAKS:")
-        for index in range(len(self.fit_peaks_x)):
-            peak_nr = index + 1
-            peak_matches = matches[matches.iloc[:, 0] == peak_nr].iloc[
-                :result_length, 1:3
-            ]
-            if len(peak_matches) > 0:
-                self.analysis_log.append(
-                    f"--- Peak {peak_nr} matches with:\n{peak_matches.to_markdown(index=False, tablefmt='plain', headers=['Isotope', 'Certainty [%]'])}"
-                )
-            else:
-                self.analysis_log.append(f"--- Peak {peak_nr} has no matches.")
-        self.analysis_log.append("\n")
+        try:
+            mf = MatchFeatures(self.fit_peaks_x)
+        except AttributeError:
+            self.analysis_log.append("No peaks fitted. Try fitting the peaks first.\n")
+        else:
+            matches = mf.match_isotopes()
+            result_length = self.result_length_spin.value()
+            self.analysis_log.append("MATCHED PEAKS:")
+            for index in range(len(self.fit_peaks_x)):
+                peak_nr = index + 1
+                peak_matches = matches[matches.iloc[:, 0] == peak_nr].iloc[
+                    :result_length, 1:3
+                ]
+                if len(peak_matches) > 0:
+                    self.analysis_log.append(
+                        f"--- Peak {peak_nr} matches with:\n{peak_matches.to_markdown(index=False, tablefmt='plain', headers=['Isotope', 'Certainty [%]'])}"
+                    )
+                else:
+                    self.analysis_log.append(f"--- Peak {peak_nr} has no matches.")
+            self.analysis_log.append("\n")
 
     @Slot()
     def analyze_help(self):
