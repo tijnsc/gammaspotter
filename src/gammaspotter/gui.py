@@ -86,6 +86,7 @@ class UserInterface(QtWidgets.QMainWindow):
         self.peak_thresh_spin.valueChanged.connect(self.plot_peaks)
         self.peaks_checkbox.stateChanged.connect(self.plot_peaks)
 
+        self.peak_thresh_spin.valueChanged.connect(self.plot_fit_peaks)
         self.domain_width_spin.valueChanged.connect(self.plot_fit_peaks)
         self.fit_checkbox.stateChanged.connect(self.plot_fit_peaks)
 
