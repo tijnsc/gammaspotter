@@ -277,6 +277,7 @@ Dylan Telleman and Tijn Schuitevoerder
 
             plot_widget.clear()
 
+            plot_widget.setTitle(filename.split("/")[-1])
             plot_widget.setLabel("left", "Counts")
             plot_widget.setLabel("bottom", f"Energy [{x_unit}]")
 
