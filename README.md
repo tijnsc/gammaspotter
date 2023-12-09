@@ -29,5 +29,3 @@ This will install all missing dependencies and the application itself.
 
 ### Gammaspotter GUI
 If you have installed the gammaspotter package you should now be able to run the `gammaspotter-gui` command.
-
-## Usage
