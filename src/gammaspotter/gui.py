@@ -159,7 +159,9 @@ class UserInterface(QtWidgets.QMainWindow):
         self.help_log = QtWidgets.QTextEdit()
         self.help_log.setReadOnly(True)
         self.help_log.append("This is a helpdesk for if you find yourself having problems with the program.\n"
-                             ""
+                             "Choose witch tab you having problems with.\n\n"
+                             "Hope we can help you well,\n"
+                             "Dylan Telleman and Tijn Schuitevoerder"
                              )
         vbox_menu.addWidget(self.help_log)
 
