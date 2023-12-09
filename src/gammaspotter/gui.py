@@ -234,6 +234,7 @@ class UserInterface(QtWidgets.QMainWindow):
 
             match self.central_widget.currentIndex():
                 case 0:
+                    self.clear_analysis_data()
                     plot_widget = self.plot_widget_analyze
                     self.process_data_analyze = ProcessData(opened_file)
                     latest_data = self.process_data_analyze
@@ -241,6 +242,7 @@ class UserInterface(QtWidgets.QMainWindow):
                     self.show_analysis_funcs(True)
 
                 case 1:
+                    self.clear_calibration_data()
                     plot_widget = self.plot_widget_calibrate
                     self.process_data_calibrate = ProcessData(opened_file)
                     latest_data = self.process_data_calibrate
