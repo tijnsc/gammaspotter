@@ -179,7 +179,7 @@ class UserInterface(QtWidgets.QMainWindow):
             self.peaks_checkbox,
             self.peak_thresh_spin,
             self.domain_width_spin,
-            self.find_isotopes_btn,
+            self.match_isotopes_btn,
             self.result_length_spin,
         ]
         for widget in widgets:
@@ -354,6 +354,8 @@ class UserInterface(QtWidgets.QMainWindow):
             self.analysis_log.append("MATCHED PEAKS:")
             for index in range(len(self.fit_peaks_x)):
                 peak_nr = index + 1
+
+                # gets the first result_length rows of the matches dataframe where the peak numbers match
                 peak_matches = matches[matches.iloc[:, 0] == peak_nr].iloc[
                     :result_length, 1:3
                 ]
