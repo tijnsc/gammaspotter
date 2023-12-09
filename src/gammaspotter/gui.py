@@ -48,19 +48,16 @@ class UserInterface(QtWidgets.QMainWindow):
         self.peak_thresh_spin.setValue(100)
         form.addRow("Peak detection threshold", self.peak_thresh_spin)
 
+        self.peaks_checkbox = QtWidgets.QCheckBox()
+        form.addRow("Show detected peaks", self.peaks_checkbox)
+
         self.domain_width_spin = QtWidgets.QSpinBox()
         self.domain_width_spin.setRange(1, 1000000)
         self.domain_width_spin.setValue(10)
         form.addRow("Fit domain width", self.domain_width_spin)
 
-        self.peaks_checkbox = QtWidgets.QCheckBox()
-        form.addRow("Show detected peaks", self.peaks_checkbox)
-
         self.fit_checkbox = QtWidgets.QCheckBox()
         form.addRow("Show fitted peaks", self.fit_checkbox)
-
-        self.fit_button = QtWidgets.QPushButton("Fit")
-        form.addRow(self.fit_button)
 
         self.find_isotopes_btn = QtWidgets.QPushButton("Find Isotopes")
         form.addRow(self.find_isotopes_btn)
