@@ -134,22 +134,6 @@ class UserInterface(QtWidgets.QMainWindow):
         clear_calibration_log_btn.clicked.connect(self.clear_calibration_log)
         clear_calibration_data_btn.clicked.connect(self.clear_calibration_data)
 
-    def show_analysis_funcs(self, action: bool):
-        widgets = [
-            self.fit_checkbox,
-            self.peaks_checkbox,
-            self.peak_thresh_spin,
-            self.domain_width_spin,
-            self.find_isotopes_btn,
-        ]
-        for widget in widgets:
-            widget.setEnabled(action)
-
-    def show_calibrate_funcs(self, action: bool):
-        widgets = [self.combo_isotope, self.find_peaks_btn, self.save_cal_btn]
-        for widget in widgets:
-            widget.setEnabled(action)
-
     def setup_help_tab(self):
         vbox_main = QtWidgets.QVBoxLayout(self.help_tab)
 
@@ -175,6 +159,22 @@ class UserInterface(QtWidgets.QMainWindow):
             "Dylan Telleman and Tijn Schuitevoerder"
         )
         vbox_main.addWidget(self.help_log)
+
+    def show_analysis_funcs(self, action: bool):
+        widgets = [
+            self.fit_checkbox,
+            self.peaks_checkbox,
+            self.peak_thresh_spin,
+            self.domain_width_spin,
+            self.find_isotopes_btn,
+        ]
+        for widget in widgets:
+            widget.setEnabled(action)
+
+    def show_calibrate_funcs(self, action: bool):
+        widgets = [self.combo_isotope, self.find_peaks_btn, self.save_cal_btn]
+        for widget in widgets:
+            widget.setEnabled(action)
 
     @Slot()
     def clear_analysis_log(self):
