@@ -1,8 +1,11 @@
 import pandas as pd
-from scipy.signal import find_peaks
-from lmfit import models
-from gammaspotter.fit_models import FitModels
+import numpy as np
+
 from statistics import mean
+from scipy.signal import find_peaks
+from scipy.optimize import curve_fit
+
+from gammaspotter.fit_models import FitModels
 
 
 class ProcessData:
@@ -55,37 +58,6 @@ class ProcessData:
 
         return domains
 
-    def fit_gauss(
-        self, data: pd.DataFrame, amp: float, cen: float, wid: float, startheight: float
-    ):
-        """Takes data and fits a gaussian distribution over it.
-
-        Args:
-            data (pd.DataFrame): Input data, has to be provided seperately from the main dataset.
-            amp (float): Expected amplitude of the distribution.
-            cen (float): Expected center of the distribution.
-            wid (float): Expected width of the distribution.
-            startheight (float): Expected startheight of the distribution.
-
-        Returns:
-            ModelResult: Result of the performed fit.
-        """
-        gmodel = FitModels.gaussian
-        lmfit_model = models.Model(gmodel)
-        x = data.iloc[:, 0]
-        y = data.iloc[:, 1]
-        result = lmfit_model.fit(
-            # TODO: remove this hacky fix
-            y,
-            x=x,
-            amp=amp + 4000,
-            cen=cen,
-            wid=wid,
-            startheight=startheight,
-        )
-        
-        return result
-
     def fit_peaks(self, domain_width: float, prominence: int) -> pd.DataFrame:
         """Takes raw spectrum data and performs a gaussian model fit on domains of the roughly detected peaks.
         This function returns more accurate peak positions than 'find_gamma_peaks'.
@@ -106,16 +78,33 @@ class ProcessData:
         x_positions = []
         x_positions_std = []
         for index, domain in enumerate(domains):
-            result = self.fit_gauss(
-                data=domain,
-                amp=peaks_y.values[index],
-                cen=peaks_x.values[index],
-                wid=domain_width,
-                startheight=domain.iloc[:, 1].min(),
-            )
+            x = domain.iloc[:, 0]
+            y = domain.iloc[:, 1]
 
-            x_positions.append(result.values["cen"])
-            x_positions_std.append(result.params["cen"].stderr)
+            # [amp, cen, wid, startheight]
+            initial_guess = [
+                peaks_y.values[index],
+                peaks_x.values[index],
+                domain_width,
+                domain.iloc[:, 1].min(),
+            ]
+
+            # only positive parameters are allowed
+            bounds = ([0, 0, 0, 0], np.inf)
+
+            fit_func = FitModels.gaussian
+            popt, pcov = curve_fit(fit_func, x, y, p0=initial_guess, bounds=bounds)
+
+            # extract fitted parameters
+            amp, cen, wid, startheight = popt
+            fit_errors = np.sqrt(np.diag(pcov))
+
+            # get the energy and standard error
+            energy_of_peak = cen
+            standard_error = fit_errors[1]
+
+            x_positions.append(energy_of_peak)
+            x_positions_std.append(standard_error)
 
         x_positions_df = pd.DataFrame(
             {
