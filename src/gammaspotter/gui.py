@@ -53,15 +53,11 @@ class UserInterface(QtWidgets.QMainWindow):
         self.domain_width_spin.setValue(10)
         form.addRow("Fit domain width", self.domain_width_spin)
 
-        grid_buttons = QtWidgets.QGridLayout()
-        form.addRow(grid_buttons)
+        self.peaks_checkbox = QtWidgets.QCheckBox()
+        form.addRow("Show detected peaks", self.peaks_checkbox)
 
-        self.peaks_checkbox = QtWidgets.QCheckBox(text="Show Peaks")
-        grid_buttons.addWidget(self.peaks_checkbox, 0, 0)
-
-        self.fit_checkbox = QtWidgets.QCheckBox(text="Show Fitted Peak")
-        self.fit_checkbox.setChecked(True)
-        grid_buttons.addWidget(self.fit_checkbox, 0, 1)
+        self.fit_checkbox = QtWidgets.QCheckBox()
+        form.addRow("Show fitted peaks", self.fit_checkbox)
 
         self.fit_button = QtWidgets.QPushButton("Fit")
         form.addRow(self.fit_button)
@@ -135,35 +131,30 @@ class UserInterface(QtWidgets.QMainWindow):
         clear_calibration_plot_btn.clicked.connect(self.clear_calibration_plot)
 
     def setup_help_tab(self):
-        hbox_main = QtWidgets.QHBoxLayout(self.help_tab)
+        vbox_main = QtWidgets.QVBoxLayout(self.help_tab)
 
-        vbox_menu = QtWidgets.QVBoxLayout()
-        hbox_main.addLayout(vbox_menu)
-
-        form = QtWidgets.QFormLayout()
-        vbox_menu.addLayout(form)
-
-        grid_help = QtWidgets.QGridLayout()
-        form.addRow(grid_help)
+        hbox_btns = QtWidgets.QHBoxLayout()
+        vbox_main.addLayout(hbox_btns)
 
         self.analyze_button = QtWidgets.QPushButton("Help with Analyze tab")
-        grid_help.addWidget(self.analyze_button, 0, 0)
+        hbox_btns.addWidget(self.analyze_button)
 
         self.calibrate_button = QtWidgets.QPushButton("Help with Calibrate tab")
-        grid_help.addWidget(self.calibrate_button, 0, 1)
+        hbox_btns.addWidget(self.calibrate_button)
 
         self.analyze_button.clicked.connect(self.analyze_help)
         self.calibrate_button.clicked.connect(self.calibrate_help)
 
-        vbox_menu.addWidget(QtWidgets.QLabel("Helpdesk"))
+        vbox_main.addWidget(QtWidgets.QLabel("Helpdesk"))
         self.help_log = QtWidgets.QTextEdit()
         self.help_log.setReadOnly(True)
-        self.help_log.append("This is a helpdesk for if you find yourself having problems with the program.\n"
-                             "Choose witch tab you having problems with.\n\n"
-                             "Hope we can help you well,\n"
-                             "Dylan Telleman and Tijn Schuitevoerder"
-                             )
-        vbox_menu.addWidget(self.help_log)
+        self.help_log.append(
+            "This is a helpdesk for if you find yourself having problems with the program.\n"
+            "Choose witch tab you having problems with.\n\n"
+            "Hope we can help you well,\n"
+            "Dylan Telleman and Tijn Schuitevoerder"
+        )
+        vbox_main.addWidget(self.help_log)
 
     @Slot()
     def clear_analysis_log(self):
@@ -200,15 +191,12 @@ class UserInterface(QtWidgets.QMainWindow):
         self.help_log.clear()
         self.help_log.append(
             "On the right hand side of the application you can see an 'Open Measurement' button.\n"
-            "This is where you can choose witch measurement you want to use.\n\n"
-
-            "Right under the burron there is a changable box 'Peak detection treshold'"
+            "This is where you can choose which measurement you want to use.\n\n"
+            "Right under the button there is a changable box 'Peak detection treshold'"
             "This determines how sensitive the program is with finding the peaks.\n"
             "When the threshold is set higher it will find less peaks.\n\n"
-
             "Under the treshold there is a changable box 'Fit domain width'.\n"
             "You can change how wide you want to fit over the found peaks.\n\n"
-
         )
 
     @Slot()
