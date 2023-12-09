@@ -240,6 +240,7 @@ class UserInterface(QtWidgets.QMainWindow):
                     latest_data = self.process_data_analyze
                     window_log = self.analysis_log
                     self.show_analysis_funcs(True)
+                    x_unit = "keV"
 
                 case 1:
                     self.clear_calibration_data()
@@ -248,11 +249,12 @@ class UserInterface(QtWidgets.QMainWindow):
                     latest_data = self.process_data_calibrate
                     window_log = self.calibration_log
                     self.show_calibrate_funcs(True)
+                    x_unit = "mV"
 
             plot_widget.clear()
 
             plot_widget.setLabel("left", "Counts")
-            plot_widget.setLabel("bottom", "Energy")
+            plot_widget.setLabel("bottom", f"Energy [{x_unit}]")
 
             spectrum_data = latest_data.data
             plot_widget.plot(
@@ -284,7 +286,7 @@ class UserInterface(QtWidgets.QMainWindow):
             self.plot_widget_analyze.addItem(self.peaks_scatter)
 
             self.analysis_log.append(
-                f"DETECTED {len(peaks_data)} PEAKS:\n{peaks_data.to_markdown(index=False, tablefmt='plain', headers=['Energy', 'Counts'])}\n"
+                f"DETECTED {len(peaks_data)} PEAKS:\n{peaks_data.to_markdown(index=False, tablefmt='plain', headers=['Energy [keV]', 'Counts'])}\n"
             )
 
     @Slot()
@@ -314,7 +316,7 @@ class UserInterface(QtWidgets.QMainWindow):
                     self.plot_widget_analyze.addItem(vline)
 
                 self.analysis_log.append(
-                    f"FITTED {len(self.fit_peaks_x)} PEAKS:\n{self.fit_peaks_x.to_markdown(index=False, tablefmt='plain', headers=['Energy', 'Standard Error'])}\n"
+                    f"FITTED {len(self.fit_peaks_x)} PEAKS:\n{self.fit_peaks_x.to_markdown(index=False, tablefmt='plain', headers=['Energy [keV]', 'Standard Error'])}\n"
                 )
 
     # maybe move this to model
@@ -337,7 +339,7 @@ class UserInterface(QtWidgets.QMainWindow):
             self.plot_widget_calibrate.addItem(vline)
 
         self.calibration_log.append(
-            f"DETECTED {len(found_peaks)} PEAKS:\n{found_peaks.to_markdown(index=False, tablefmt='plain', headers=['Energy', 'Counts'])}\n"
+            f"DETECTED {len(found_peaks)} PEAKS:\n{found_peaks.to_markdown(index=False, tablefmt='plain', headers=['Energy [mV]', 'Counts'])}\n"
         )
 
     @Slot()
