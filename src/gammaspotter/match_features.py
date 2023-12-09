@@ -29,17 +29,20 @@ class MatchFeatures:
         # looping every known source by every peak for finding all the sigmas
         for found_isotope in self.data_peaks.itertuples(index=False):
             for catalog_isotope in self.catalog_isotopes:
-                sigma_source = (
-                    abs(catalog_isotope[0] - found_isotope[1]) / found_isotope[2]
-                )
-                percentage_match = self.sigma_changer(sigma_source)
+                literature_energy = catalog_isotope[0]
+                literature_isotope = catalog_isotope[1]
+                measured_energy = found_isotope[1]
+                std_meas = found_isotope[2]
+
+                z_score = (measured_energy - literature_energy) / std_meas
+                percentage_match = self.sigma_changer(abs(z_score))
                 if percentage_match > 0:
                     output_list.append(
                         [
                             peak_nr,
-                            catalog_isotope[1],
+                            literature_isotope,
                             percentage_match,
-                            catalog_isotope[0],
+                            literature_energy,
                         ]
                     )
             peak_nr += 1
@@ -53,16 +56,16 @@ class MatchFeatures:
 
         return sorted_df
 
-    def sigma_changer(self, sigma_source):
+    def sigma_changer(self, z_score):
         """Function fo changing the sigma in to a percentage.
 
         Args:
-            sigma_source (float): The error of the fit function.
+            z_score (float): The z_score of the measured data compared to the literature value.
 
         Returns:
             float: Percentage of the given sigma.
         """
-        return round(erfc(sigma_source / 5 * sqrt(2)) * 100, 2)
+        return round(erfc(z_score / 5 * sqrt(2)) * 100, 2)
 
 
 if __name__ == "__main__":
