@@ -50,6 +50,10 @@ class UserInterface(QtWidgets.QMainWindow):
         self.domain_width_spin.setValue(10)
         form.addRow("Fit domain width", self.domain_width_spin)
 
+        self.peaks_checkbox = QtWidgets.QCheckBox(text="Show peaks")
+        self.peaks_checkbox.setChecked(True)
+        form.addRow(self.peaks_checkbox)
+
         grid_buttons = QtWidgets.QGridLayout()
         form.addRow(grid_buttons)
 
@@ -81,12 +85,13 @@ class UserInterface(QtWidgets.QMainWindow):
         clear_analysis_plot_btn = QtWidgets.QPushButton("Clear Plot")
         hbox_clear.addWidget(clear_analysis_plot_btn)
 
+        self.peaks_checkbox.stateChanged.connect(self.state)
         open_btn.clicked.connect(self.open_file)
         clear_analysis_log_btn.clicked.connect(self.clear_analysis_log)
         clear_analysis_plot_btn.clicked.connect(self.clear_analysis_plot)
-        remove_peaks_btn.clicked.connect(self.remove_points)
+        # remove_peaks_btn.clicked.connect(self.remove_points)
         remove_fit_peaks_btn.clicked.connect(self.remove_vlines)
-        detect_peaks_btn.clicked.connect(self.plot_peaks)
+        # detect_peaks_btn.clicked.connect(self.plot_peaks)
         fit_peaks_btn.clicked.connect(self.plot_fit_peaks)
         find_isotopes_btn.clicked.connect(self.find_isotopes)
 
@@ -141,6 +146,13 @@ class UserInterface(QtWidgets.QMainWindow):
     @Slot()
     def clear_calibration_log(self):
         self.calibration_log.clear()
+
+    @Slot()
+    def state(self):
+        if self.peaks_checkbox.isChecked():
+            self.plot_peaks()
+        else:
+            self.remove_points()
 
     @Slot()
     def clear_analysis_plot(self):
