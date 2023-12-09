@@ -106,11 +106,11 @@ class UserInterface(QtWidgets.QMainWindow):
         self.combo_isotope.addItems(["Na-22", "Cs-137"])
         form.addRow("Measured Isotope", self.combo_isotope)
 
-        find_peaks_btn = QtWidgets.QPushButton("Find Peaks")
-        form.addRow(find_peaks_btn)
+        self.find_peaks_btn = QtWidgets.QPushButton("Find Peaks")
+        form.addRow(self.find_peaks_btn)
 
-        save_cal_btn = QtWidgets.QPushButton("Save Calibrated Measurement")
-        form.addRow(save_cal_btn)
+        self.save_cal_btn = QtWidgets.QPushButton("Save Calibrated Measurement")
+        form.addRow(self.save_cal_btn)
 
         vbox_menu.addWidget(QtWidgets.QLabel("Calibration Log"))
         self.calibration_log = QtWidgets.QTextEdit()
@@ -124,16 +124,17 @@ class UserInterface(QtWidgets.QMainWindow):
         vbox_menu.addLayout(hbox_clear)
         clear_calibration_log_btn = QtWidgets.QPushButton("Clear Log")
         hbox_clear.addWidget(clear_calibration_log_btn)
-        clear_calibration_plot_btn = QtWidgets.QPushButton("Clear Plot")
-        hbox_clear.addWidget(clear_calibration_plot_btn)
+        clear_calibration_data_btn = QtWidgets.QPushButton("Clear Data")
+        hbox_clear.addWidget(clear_calibration_data_btn)
+
+        self.show_calibrate_funcs(False)
 
         open_btn.clicked.connect(self.open_file)
-        find_peaks_btn.clicked.connect(self.detect_cal_peaks)
+        self.find_peaks_btn.clicked.connect(self.detect_cal_peaks)
         clear_calibration_log_btn.clicked.connect(self.clear_calibration_log)
-        clear_calibration_plot_btn.clicked.connect(self.clear_calibration_plot)
+        clear_calibration_data_btn.clicked.connect(self.clear_calibration_data)
 
     def show_analysis_funcs(self, action: bool):
-        # self.analysis_show = action
         widgets = [
             self.fit_checkbox,
             self.peaks_checkbox,
@@ -141,6 +142,11 @@ class UserInterface(QtWidgets.QMainWindow):
             self.domain_width_spin,
             self.find_isotopes_btn,
         ]
+        for widget in widgets:
+            widget.setEnabled(action)
+
+    def show_calibrate_funcs(self, action: bool):
+        widgets = [self.combo_isotope, self.find_peaks_btn, self.save_cal_btn]
         for widget in widgets:
             widget.setEnabled(action)
 
@@ -202,14 +208,15 @@ class UserInterface(QtWidgets.QMainWindow):
             self.analysis_log.append("Cleared the data.\n")
 
     @Slot()
-    def clear_calibration_plot(self):
+    def clear_calibration_data(self):
         try:
             del self.process_data_calibrate
         except:
             self.calibration_log.append("Nothing to clear.\n")
         else:
+            self.show_calibrate_funcs(False)
             self.plot_widget_calibrate.clear()
-            self.calibration_log.append("Cleared the plot.\n")
+            self.calibration_log.append("Cleared the data.\n")
 
     @Slot()
     def open_file(self):
@@ -231,6 +238,7 @@ class UserInterface(QtWidgets.QMainWindow):
                     self.process_data_calibrate = ProcessData(opened_file)
                     latest_data = self.process_data_calibrate
                     window_log = self.calibration_log
+                    self.show_calibrate_funcs(True)
 
             plot_widget.clear()
 
