@@ -184,18 +184,6 @@ class UserInterface(QtWidgets.QMainWindow):
         self.calibration_log.clear()
 
     @Slot()
-    def fit_plot(self):
-        if self.peaks_checkbox.isChecked():
-            self.plot_peaks()
-        else:
-            self.remove_points()
-
-        if self.fit_checkbox.isChecked():
-            self.plot_fit_peaks()
-        else:
-            self.remove_vlines()
-
-    @Slot()
     def clear_analysis_data(self):
         try:
             del self.process_data_analyze
