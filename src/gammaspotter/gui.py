@@ -163,7 +163,7 @@ class UserInterface(QtWidgets.QMainWindow):
         hbox_btns = QtWidgets.QHBoxLayout()
         vbox_main.addLayout(hbox_btns)
 
-        self.analyze_button = QtWidgets.QPushButton("Help with analyis")
+        self.analyze_button = QtWidgets.QPushButton("Help with analysis")
         hbox_btns.addWidget(self.analyze_button)
 
         self.calibrate_button = QtWidgets.QPushButton("Help with calibration")
@@ -176,10 +176,12 @@ class UserInterface(QtWidgets.QMainWindow):
         self.help_log = QtWidgets.QTextEdit()
         self.help_log.setReadOnly(True)
         self.help_log.append(
-            "This is a helpdesk for if you find yourself having problems with the program.\n"
-            "Choose witch tab you having problems with.\n\n"
-            "Hope we can help you well,\n"
-            "Dylan Telleman and Tijn Schuitevoerder"
+            """This is a helpdesk for if you find yourself having problems with the program.
+Choose which tab you having problems with.
+
+Hope we can help you well,
+Dylan Telleman and Tijn Schuitevoerder
+"""
         )
         vbox_main.addWidget(self.help_log)
 
@@ -381,13 +383,16 @@ class UserInterface(QtWidgets.QMainWindow):
     def analyze_help(self):
         self.help_log.clear()
         self.help_log.append(
-            "On the right hand side of the application you can see an 'Open Measurement' button.\n"
-            "This is where you can choose which measurement you want to use.\n\n"
-            "Right under the button there is a changable box 'Peak detection treshold'"
-            "This determines how sensitive the program is with finding the peaks.\n"
-            "When the threshold is set higher it will find less peaks.\n\n"
-            "Under the treshold there is a changable box 'Fit domain width'.\n"
-            "You can change how wide you want to fit over the found peaks.\n\n"
+            """On the right hand side of the application you can see an 'Open Measurement' button.
+This is where you can choose which measurement you want to use.
+
+Right under the button there is a changable box 'Peak detection treshold'
+This determines how sensitive the program is with finding the peaks.
+When the threshold is set higher it will find less peaks.
+
+Under the treshold there is a changable box 'Fit domain width'.
+You can change how wide you want to fit over the found peaks.
+"""
         )
 
     @Slot()
