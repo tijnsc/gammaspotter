@@ -19,12 +19,15 @@ class UserInterface(QtWidgets.QMainWindow):
 
         self.analyze_tab = QtWidgets.QWidget()
         self.calibrate_tab = QtWidgets.QWidget()
+        self.help_tab = QtWidgets.QWidget()
 
         self.central_widget.addTab(self.analyze_tab, "Analyze")
         self.central_widget.addTab(self.calibrate_tab, "Calibrate")
+        self.central_widget.addTab(self.help_tab, "Help")
 
         self.setup_analyze_tab()
         self.setup_calibrate_tab()
+        self.setup_help_tab()
 
     def setup_analyze_tab(self):
         hbox_main = QtWidgets.QHBoxLayout(self.analyze_tab)
@@ -56,7 +59,7 @@ class UserInterface(QtWidgets.QMainWindow):
         self.peaks_checkbox = QtWidgets.QCheckBox(text="Show Peaks")
         grid_buttons.addWidget(self.peaks_checkbox, 0, 0)
 
-        self.fit_checkbox = QtWidgets.QCheckBox(text="Show Fit")
+        self.fit_checkbox = QtWidgets.QCheckBox(text="Show Fitted Peak")
         grid_buttons.addWidget(self.fit_checkbox, 0, 1)
 
         # detect_peaks_btn = QtWidgets.QPushButton("Detect Peaks")
@@ -141,6 +144,23 @@ class UserInterface(QtWidgets.QMainWindow):
         find_peaks_btn.clicked.connect(self.detect_cal_peaks)
         clear_calibration_log_btn.clicked.connect(self.clear_calibration_log)
         clear_calibration_plot_btn.clicked.connect(self.clear_calibration_plot)
+
+    def setup_help_tab(self):
+        hbox_main = QtWidgets.QHBoxLayout(self.help_tab)
+
+        vbox_menu = QtWidgets.QVBoxLayout()
+        hbox_main.addLayout(vbox_menu)
+
+        form = QtWidgets.QFormLayout()
+        vbox_menu.addLayout(form)
+
+        vbox_menu.addWidget(QtWidgets.QLabel("Helpdesk"))
+        self.help_log = QtWidgets.QTextEdit()
+        self.help_log.setReadOnly(True)
+        self.help_log.append(
+            "Gammaspotter by Dylan Telleman and Tijn Schuitevoerder.\n"
+        )
+        vbox_menu.addWidget(self.help_log)
 
     @Slot()
     def clear_analysis_log(self):
