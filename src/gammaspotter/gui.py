@@ -234,6 +234,7 @@ Dylan Telleman and Tijn Schuitevoerder
         else:
             self.show_analysis_funcs(False)
             self.plot_widget_analyze.clear()
+            self.plot_widget_analyze.setTitle("")
 
     @Slot()
     def clear_calibration_data(self):
@@ -244,6 +245,7 @@ Dylan Telleman and Tijn Schuitevoerder
         else:
             self.show_calibrate_funcs(False)
             self.plot_widget_calibrate.clear()
+            self.plot_widget_analyze.setTitle("")
 
     @Slot()
     def send_to_analysis(self):
