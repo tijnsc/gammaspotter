@@ -60,17 +60,11 @@ class UserInterface(QtWidgets.QMainWindow):
         grid_buttons.addWidget(self.peaks_checkbox, 0, 0)
 
         self.fit_checkbox = QtWidgets.QCheckBox(text="Show Fitted Peak")
+        self.fit_checkbox.setChecked(True)
         grid_buttons.addWidget(self.fit_checkbox, 0, 1)
 
-        # detect_peaks_btn = QtWidgets.QPushButton("Detect Peaks")
-        # grid_buttons.addWidget(detect_peaks_btn, 0, 0)
-        # remove_peaks_btn = QtWidgets.QPushButton("Remove Detected Peaks")
-        # grid_buttons.addWidget(remove_peaks_btn, 0, 1)
-
-        # fit_peaks_btn = QtWidgets.QPushButton("Fit Peaks")
-        # grid_buttons.addWidget(fit_peaks_btn, 1, 0)
-        # remove_fit_peaks_btn = QtWidgets.QPushButton("Remove Fit Peaks")
-        # grid_buttons.addWidget(remove_fit_peaks_btn, 1, 1)
+        self.fit_button = QtWidgets.QPushButton("Fit")
+        form.addRow(self.fit_button)
 
         find_isotopes_btn = QtWidgets.QPushButton("Find Isotopes")
         form.addRow(find_isotopes_btn)
@@ -91,14 +85,9 @@ class UserInterface(QtWidgets.QMainWindow):
         hbox_clear.addWidget(clear_analysis_plot_btn)
 
         open_btn.clicked.connect(self.open_file)
-        self.peaks_checkbox.stateChanged.connect(self.peak_state)
-        self.fit_checkbox.stateChanged.connect(self.fit_state)
+        self.fit_button.clicked.connect(self.fit_plot)
         clear_analysis_log_btn.clicked.connect(self.clear_analysis_log)
         clear_analysis_plot_btn.clicked.connect(self.clear_analysis_plot)
-        # remove_peaks_btn.clicked.connect(self.remove_points)
-        # remove_fit_peaks_btn.clicked.connect(self.remove_vlines)
-        # detect_peaks_btn.clicked.connect(self.plot_peaks)
-        # fit_peaks_btn.clicked.connect(self.plot_fit_peaks)
         find_isotopes_btn.clicked.connect(self.find_isotopes)
 
     def setup_calibrate_tab(self):
@@ -171,18 +160,15 @@ class UserInterface(QtWidgets.QMainWindow):
         self.calibration_log.clear()
 
     @Slot()
-    def peak_state(self):
+    def fit_plot(self):
         if self.peaks_checkbox.isChecked():
             self.plot_peaks()
         else:
             self.remove_points()
-
-    @Slot()
-    def fit_state(self):
         if self.fit_checkbox.isChecked():
-            self.plot_fit_peaks
+            self.plot_fit_peaks()
         else:
-            self.remove_vlines
+            self.remove_vlines()
 
     @Slot()
     def clear_analysis_plot(self):
