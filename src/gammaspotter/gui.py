@@ -187,26 +187,6 @@ class UserInterface(QtWidgets.QMainWindow):
             self.analysis_log.append("Cleared the plot.\n")
 
     @Slot()
-    def analyze_help(self):
-        self.help_log.clear()
-        self.help_log.append(
-            "On the right hand side of the application you can see an 'Open Measurement' button.\n"
-            "This is where you can choose which measurement you want to use.\n\n"
-            "Right under the button there is a changable box 'Peak detection treshold'"
-            "This determines how sensitive the program is with finding the peaks.\n"
-            "When the threshold is set higher it will find less peaks.\n\n"
-            "Under the treshold there is a changable box 'Fit domain width'.\n"
-            "You can change how wide you want to fit over the found peaks.\n\n"
-        )
-
-    @Slot()
-    def calibrate_help(self):
-        self.help_log.clear()
-        self.help_log.append(
-            "This is the information for helping with the calibrate tab."
-        )
-
-    @Slot()
     def clear_calibration_plot(self):
         try:
             del self.process_data_calibrate
@@ -347,6 +327,28 @@ class UserInterface(QtWidgets.QMainWindow):
         matches = mf.match_isotopes()
         for index in range(len(self.fit_peaks_x)):
             print(matches[matches.iloc[:, 0] == index + 1].iloc[:5, 1:3])
+
+    
+    @Slot()
+    def analyze_help(self):
+        self.help_log.clear()
+        self.help_log.append(
+            "On the right hand side of the application you can see an 'Open Measurement' button.\n"
+            "This is where you can choose which measurement you want to use.\n\n"
+            "Right under the button there is a changable box 'Peak detection treshold'"
+            "This determines how sensitive the program is with finding the peaks.\n"
+            "When the threshold is set higher it will find less peaks.\n\n"
+            "Under the treshold there is a changable box 'Fit domain width'.\n"
+            "You can change how wide you want to fit over the found peaks.\n\n"
+        )
+
+    @Slot()
+    def calibrate_help(self):
+        self.help_log.clear()
+        self.help_log.append(
+            "This is the information for helping with the calibrate tab."
+        )
+
 
 
 def main():
