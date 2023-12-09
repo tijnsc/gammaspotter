@@ -340,8 +340,11 @@ Dylan Telleman and Tijn Schuitevoerder
                     self.vlines.append(vline)
                     self.plot_widget_analyze.addItem(vline)
 
+                peak_count = len(self.fit_peaks_x)
+                self.fit_peaks_x.insert(0, "peak", range(1, peak_count + 1))
+
                 self.analysis_log.append(
-                    f"FITTED {len(self.fit_peaks_x)} PEAKS:\n{self.fit_peaks_x.to_markdown(index=False, tablefmt='plain', headers=['Energy [keV]', 'Standard Error'])}\n"
+                    f"FITTED {peak_count} PEAKS:\n{self.fit_peaks_x.to_markdown(index=False, tablefmt='plain', headers=['Peak', 'Energy [keV]', 'Standard Error'])}\n"
                 )
 
     # maybe move this to model
@@ -376,21 +379,22 @@ Dylan Telleman and Tijn Schuitevoerder
         else:
             matches = mf.match_isotopes()
             result_length = self.result_length_spin.value()
-            self.analysis_log.append("MATCHED PEAKS:")
-            for index in range(len(self.fit_peaks_x)):
+            peak_count = len(self.fit_peaks_x)
+            self.analysis_log.append(f"MATCHED {peak_count} PEAKS:")
+            for index in range(peak_count):
                 peak_nr = index + 1
 
                 # gets the first result_length rows of the matches dataframe where the peak numbers match
                 peak_matches = matches[matches.iloc[:, 0] == peak_nr].iloc[
-                    :result_length, 1:3
+                    :result_length, 1:4
                 ]
                 if len(peak_matches) > 0:
                     self.analysis_log.append(
-                        f"--- Peak {peak_nr} matches with:\n{peak_matches.to_markdown(index=False, tablefmt='plain', headers=['Isotope', 'Certainty [%]'])}"
+                        f"--- Peak {peak_nr} matches with: ---\n{peak_matches.to_markdown(index=False, tablefmt='plain', headers=['Isotope', 'Certainty [%]', 'Energy [keV]'])}"
                     )
                 else:
-                    self.analysis_log.append(f"--- Peak {peak_nr} has no matches.")
-            self.analysis_log.append("\n")
+                    self.analysis_log.append(f"--- Peak {peak_nr} has no matches. ---")
+            self.analysis_log.append("")
 
     @Slot()
     def analyze_help(self):

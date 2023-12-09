@@ -30,15 +30,22 @@ class MatchFeatures:
         for found_isotope in self.data_peaks.itertuples(index=False):
             for catalog_isotope in self.catalog_isotopes:
                 sigma_source = (
-                    abs(catalog_isotope[0] - found_isotope[0]) / found_isotope[1]
+                    abs(catalog_isotope[0] - found_isotope[1]) / found_isotope[2]
                 )
                 percentage_match = self.sigma_changer(sigma_source)
                 if percentage_match > 0:
-                    output_list.append([peak_nr, catalog_isotope[1], percentage_match])
+                    output_list.append(
+                        [
+                            peak_nr,
+                            catalog_isotope[1],
+                            percentage_match,
+                            catalog_isotope[0],
+                        ]
+                    )
             peak_nr += 1
 
         output_df = pd.DataFrame(
-            output_list, columns=["Peak Number", "Isotope", "Percentage"]
+            output_list, columns=["Peak Number", "Isotope", "Percentage", "Energy"]
         )
         sorted_df = output_df.sort_values(
             by=["Peak Number", "Percentage"], ascending=[True, False]
