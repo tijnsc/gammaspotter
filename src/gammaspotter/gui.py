@@ -165,6 +165,7 @@ class UserInterface(QtWidgets.QMainWindow):
             self.plot_peaks()
         else:
             self.remove_points()
+            
         if self.fit_checkbox.isChecked():
             self.plot_fit_peaks()
         else:

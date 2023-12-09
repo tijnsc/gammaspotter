@@ -76,8 +76,14 @@ class ProcessData:
         y = data.iloc[:, 1]
         result = lmfit_model.fit(
             # TODO: remove this hacky fix
-            y, x=x, amp=amp + 4000, cen=cen, wid=wid, startheight=startheight
+            y,
+            x=x,
+            amp=amp + 4000,
+            cen=cen,
+            wid=wid,
+            startheight=startheight,
         )
+        
         return result
 
     def fit_peaks(self, domain_width: float, prominence: int) -> pd.DataFrame:
