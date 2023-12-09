@@ -70,6 +70,11 @@ class UserInterface(QtWidgets.QMainWindow):
         self.result_length_spin.setValue(5)
         form.addRow("Max. results per peak", self.result_length_spin)
 
+        line = QtWidgets.QFrame()
+        line.setFrameShape(QtWidgets.QFrame.HLine)
+        line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        form.addRow(line)
+
         vbox_menu.addWidget(QtWidgets.QLabel("Analysis Log"))
         self.analysis_log = QtWidgets.QTextEdit()
         self.analysis_log.setReadOnly(True)
@@ -124,6 +129,11 @@ class UserInterface(QtWidgets.QMainWindow):
 
         self.save_cal_btn = QtWidgets.QPushButton("Save Calibrated Measurement")
         form.addRow(self.save_cal_btn)
+
+        line = QtWidgets.QFrame()
+        line.setFrameShape(QtWidgets.QFrame.HLine)
+        line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        form.addRow(line)
 
         vbox_menu.addWidget(QtWidgets.QLabel("Calibration Log"))
         self.calibration_log = QtWidgets.QTextEdit()
