@@ -55,7 +55,7 @@ class UserInterface(QtWidgets.QMainWindow):
         self.domain_width_spin = QtWidgets.QSpinBox()
         self.domain_width_spin.setSingleStep(5)
         self.domain_width_spin.setRange(1, 1000000)
-        self.domain_width_spin.setValue(10)
+        self.domain_width_spin.setValue(60)
         form.addRow("Fit domain width", self.domain_width_spin)
 
         self.fit_checkbox = QtWidgets.QCheckBox()
@@ -63,6 +63,12 @@ class UserInterface(QtWidgets.QMainWindow):
 
         self.find_isotopes_btn = QtWidgets.QPushButton("Find Isotopes")
         form.addRow(self.find_isotopes_btn)
+
+        self.result_length_spin = QtWidgets.QSpinBox()
+        self.result_length_spin.setSingleStep(1)
+        self.result_length_spin.setRange(1, 100)
+        self.result_length_spin.setValue(5)
+        form.addRow("Number of results", self.result_length_spin)
 
         vbox_menu.addWidget(QtWidgets.QLabel("Analysis Log"))
         self.analysis_log = QtWidgets.QTextEdit()
@@ -174,6 +180,7 @@ class UserInterface(QtWidgets.QMainWindow):
             self.peak_thresh_spin,
             self.domain_width_spin,
             self.find_isotopes_btn,
+            self.result_length_spin,
         ]
         for widget in widgets:
             widget.setEnabled(action)
@@ -330,8 +337,20 @@ class UserInterface(QtWidgets.QMainWindow):
     def find_isotopes(self):
         mf = MatchFeatures(self.fit_peaks_x)
         matches = mf.match_isotopes()
+        result_length = self.result_length_spin.value()
+        self.analysis_log.append("MATCHED PEAKS:")
         for index in range(len(self.fit_peaks_x)):
-            print(matches[matches.iloc[:, 0] == index + 1].iloc[:5, 1:3])
+            peak_nr = index + 1
+            peak_matches = matches[matches.iloc[:, 0] == peak_nr].iloc[
+                :result_length, 1:3
+            ]
+            if len(peak_matches) > 0:
+                self.analysis_log.append(
+                    f"--- Peak {peak_nr} matches with:\n{peak_matches.to_markdown(index=False, tablefmt='plain', headers=['Isotope', 'Certainty [%]'])}"
+                )
+            else:
+                self.analysis_log.append(f"--- Peak {peak_nr} has no matches.")
+        self.analysis_log.append("\n")
 
     @Slot()
     def analyze_help(self):
