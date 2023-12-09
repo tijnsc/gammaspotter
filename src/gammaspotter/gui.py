@@ -61,14 +61,14 @@ class UserInterface(QtWidgets.QMainWindow):
         self.fit_checkbox = QtWidgets.QCheckBox()
         form.addRow("Show fitted peaks", self.fit_checkbox)
 
-        self.find_isotopes_btn = QtWidgets.QPushButton("Find Isotopes")
-        form.addRow(self.find_isotopes_btn)
+        self.match_isotopes_btn = QtWidgets.QPushButton("Match Isotopes")
+        form.addRow(self.match_isotopes_btn)
 
         self.result_length_spin = QtWidgets.QSpinBox()
         self.result_length_spin.setSingleStep(1)
         self.result_length_spin.setRange(1, 100)
         self.result_length_spin.setValue(5)
-        form.addRow("Number of results", self.result_length_spin)
+        form.addRow("Max. results per peak", self.result_length_spin)
 
         vbox_menu.addWidget(QtWidgets.QLabel("Analysis Log"))
         self.analysis_log = QtWidgets.QTextEdit()
@@ -96,7 +96,7 @@ class UserInterface(QtWidgets.QMainWindow):
         self.domain_width_spin.valueChanged.connect(self.plot_fit_peaks)
         self.fit_checkbox.stateChanged.connect(self.plot_fit_peaks)
 
-        self.find_isotopes_btn.clicked.connect(self.find_isotopes)
+        self.match_isotopes_btn.clicked.connect(self.find_isotopes)
 
         clear_analysis_log_btn.clicked.connect(self.clear_analysis_log)
         clear_analysis_data_btn.clicked.connect(self.clear_analysis_data)
@@ -153,10 +153,10 @@ class UserInterface(QtWidgets.QMainWindow):
         hbox_btns = QtWidgets.QHBoxLayout()
         vbox_main.addLayout(hbox_btns)
 
-        self.analyze_button = QtWidgets.QPushButton("Help with Analyze tab")
+        self.analyze_button = QtWidgets.QPushButton("Help with analyis")
         hbox_btns.addWidget(self.analyze_button)
 
-        self.calibrate_button = QtWidgets.QPushButton("Help with Calibrate tab")
+        self.calibrate_button = QtWidgets.QPushButton("Help with calibration")
         hbox_btns.addWidget(self.calibrate_button)
 
         self.analyze_button.clicked.connect(self.analyze_help)
