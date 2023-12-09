@@ -143,12 +143,21 @@ class UserInterface(QtWidgets.QMainWindow):
         form = QtWidgets.QFormLayout()
         vbox_menu.addLayout(form)
 
+        grid_help = QtWidgets.QGridLayout()
+        form.addRow(grid_help)
+
+        self.analyze_button = QtWidgets.QPushButton("Help with Analyze tab")
+        grid_help.addWidget(self.analyze_button, 0, 0)
+
+        self.calibrate_button = QtWidgets.QPushButton("Help with Calibrate tab")
+        grid_help.addWidget(self.calibrate_button, 0, 1)
+
+        self.analyze_button.clicked.connect(self.analyze_help)
+        self.calibrate_button.clicked.connect(self.calibrate_help)
+
         vbox_menu.addWidget(QtWidgets.QLabel("Helpdesk"))
         self.help_log = QtWidgets.QTextEdit()
         self.help_log.setReadOnly(True)
-        self.help_log.append(
-            "Gammaspotter by Dylan Telleman and Tijn Schuitevoerder.\n"
-        )
         vbox_menu.addWidget(self.help_log)
 
     @Slot()
@@ -165,7 +174,7 @@ class UserInterface(QtWidgets.QMainWindow):
             self.plot_peaks()
         else:
             self.remove_points()
-            
+
         if self.fit_checkbox.isChecked():
             self.plot_fit_peaks()
         else:
@@ -180,6 +189,21 @@ class UserInterface(QtWidgets.QMainWindow):
         else:
             self.plot_widget_analyze.clear()
             self.analysis_log.append("Cleared the plot.\n")
+
+    @Slot()
+    def analyze_help(self):
+        self.help_log.clear()
+        self.help_log.append(
+            "On the right hand side of the application you can see an 'Open Measurement' button.\n"
+            "This is where you can choose witch measurement you want to use.\n"
+        )
+
+    @Slot()
+    def calibrate_help(self):
+        self.help_log.clear()
+        self.help_log.append(
+            "This is the information for helping with the calibrate tab."
+        )
 
     @Slot()
     def clear_calibration_plot(self):
