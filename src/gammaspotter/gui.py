@@ -30,8 +30,8 @@ class UserInterface(QtWidgets.QMainWindow):
         self.central_widget.addTab(self.analyze_tab, "Analyze")
         self.central_widget.addTab(self.help_tab, "Help")
 
-        self.setup_analyze_tab()
         self.setup_calibrate_tab()
+        self.setup_analyze_tab()
         self.setup_help_tab()
 
     def setup_calibrate_tab(self):
