@@ -63,15 +63,15 @@ class UserInterface(QtWidgets.QMainWindow):
         self.energy_spin_1.setSingleStep(0.1)
         self.energy_spin_1.setRange(0, 1000000)
         self.energy_spin_1.setValue(0)
-        self.energy_spin_1.setEnabled(False)
         form.addRow("Energy 1 [keV]", self.energy_spin_1)
 
         self.energy_spin_2 = QtWidgets.QDoubleSpinBox()
         self.energy_spin_2.setSingleStep(0.1)
         self.energy_spin_2.setRange(0, 1000000)
         self.energy_spin_2.setValue(0)
-        self.energy_spin_2.setEnabled(False)
         form.addRow("Energy 2 [keV]", self.energy_spin_2)
+
+        self.allow_calibration_steps(False)
 
         # self.find_peaks_btn = QtWidgets.QPushButton("Find Peaks")
         # form.addRow(self.find_peaks_btn)
@@ -289,8 +289,15 @@ class UserInterface(QtWidgets.QMainWindow):
             self.cal_click_x = deque(maxlen=2)
             self.cal_click_y = deque(maxlen=2)
 
-            self.energy_spin_1.setEnabled(False)
-            self.energy_spin_2.setEnabled(False)
+            self.allow_calibration_steps(False)
+
+    def allow_calibration_steps(self, action: bool):
+        self.energy_spin_1.setEnabled(action)
+        self.energy_spin_2.setEnabled(action)
+        self.preset_energies.setEnabled(action)
+        self.calc_factors_btn.setEnabled(action)
+        if not action:
+            self.preset_energies.setCurrentIndex(0)
 
     # @Slot()
     # def send_to_analysis(self):
@@ -427,11 +434,9 @@ class UserInterface(QtWidgets.QMainWindow):
             self.plot_widget_calibrate.addItem(vline)
 
         if len(x_positions) == 2:
-            self.energy_spin_1.setEnabled(True)
-            self.energy_spin_2.setEnabled(True)
+            self.allow_calibration_steps(True)
         else:
-            self.energy_spin_1.setEnabled(False)
-            self.energy_spin_2.setEnabled(False)
+            self.allow_calibration_steps(False)
 
     # not a very good solution, but it works
     @Slot()
