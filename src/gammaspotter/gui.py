@@ -156,6 +156,7 @@ class UserInterface(QtWidgets.QMainWindow):
         self.show_calibrate_funcs(False)
 
         open_btn.clicked.connect(self.open_file)
+
         self.find_peaks_btn.clicked.connect(self.detect_cal_peaks)
         self.send_to_analysis_btn.clicked.connect(self.send_to_analysis)
 
@@ -245,7 +246,7 @@ Dylan Telleman and Tijn Schuitevoerder
         else:
             self.show_calibrate_funcs(False)
             self.plot_widget_calibrate.clear()
-            self.plot_widget_analyze.setTitle("")
+            self.plot_widget_calibrate.setTitle("")
 
     @Slot()
     def send_to_analysis(self):
@@ -253,7 +254,7 @@ Dylan Telleman and Tijn Schuitevoerder
 
     @Slot()
     def open_file(self):
-        """Function for oping a file in to the application. It is possible to open two different files in the two tabs."""
+        """Function for opening a file and showing it in the plot."""
         filename, _ = QtWidgets.QFileDialog.getOpenFileName(filter="CSV files (*.csv)")
         if filename:
             opened_file = pd.read_csv(filename)
@@ -331,7 +332,7 @@ Dylan Telleman and Tijn Schuitevoerder
                     domain_width=self.domain_width_spin.value(),
                     prominence=self.peak_thresh_spin.value(),
                 )
-            except TypeError:
+            except RuntimeError:
                 self.analysis_log.append(
                     "No peaks detected. Try lowering the peak detection threshold or adjusting the domain width.\n"
                 )
@@ -346,7 +347,7 @@ Dylan Telleman and Tijn Schuitevoerder
                 self.fit_peaks_x.insert(0, "peak", range(1, peak_count + 1))
 
                 self.analysis_log.append(
-                    f"FITTED {peak_count} PEAKS:\n{self.fit_peaks_x.to_markdown(index=False, tablefmt='plain', headers=['Peak', 'Energy [keV]', 'Standard Error'])}\n"
+                    f"FITTED {peak_count} PEAKS:\n{self.fit_peaks_x.to_markdown(index=False, tablefmt='plain', headers=['Peak', 'Energy [keV]', 'Standard Error [keV]'])}\n"
                 )
 
     # maybe move this to model
