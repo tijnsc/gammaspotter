@@ -5,6 +5,7 @@ from PySide6.QtWebEngineWidgets import QWebEngineView
 import pyqtgraph as pg
 import pandas as pd
 from collections import deque
+from pathlib import Path
 
 from PySide6.QtCore import Slot, QUrl, Qt
 from gammaspotter.process_data import ProcessData
@@ -78,16 +79,10 @@ class UserInterface(QtWidgets.QMainWindow):
         self.calc_factors_btn = QtWidgets.QPushButton("Calculate Conversion Factors")
         form.addRow(self.calc_factors_btn)
 
+        self.apply_cal_btn = QtWidgets.QPushButton("Apply Calibration To Files")
+        form.addRow(self.apply_cal_btn)
+
         self.allow_calibration_steps(False)
-
-        # self.find_peaks_btn = QtWidgets.QPushButton("Find Peaks")
-        # form.addRow(self.find_peaks_btn)
-
-        # self.save_cal_btn = QtWidgets.QPushButton("Save calibrated data")
-        # form.addRow(self.save_cal_btn)
-
-        # self.send_to_analysis_btn = QtWidgets.QPushButton("Send data to analyze tab")
-        # form.addRow(self.send_to_analysis_btn)
 
         line = QtWidgets.QFrame()
         line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -124,9 +119,7 @@ class UserInterface(QtWidgets.QMainWindow):
 
         open_btn.clicked.connect(self.open_file)
         self.reset_axis_btn.clicked.connect(self.plot_widget_calibrate.autoRange)
-
-        # self.find_peaks_btn.clicked.connect(self.detect_cal_peaks)
-        # self.send_to_analysis_btn.clicked.connect(self.send_to_analysis)
+        self.apply_cal_btn.clicked.connect(self.apply_calibration)
 
         clear_calibration_log_btn.clicked.connect(self.clear_calibration_log)
         clear_calibration_data_btn.clicked.connect(self.clear_calibration_data)
@@ -268,7 +261,7 @@ class UserInterface(QtWidgets.QMainWindow):
         if filename:
             self.isotope_catalog = pd.read_csv(filename)
             self.catalog_name = filename.split("/")[-1]
-            self.calibration_log.append(
+            self.analysis_log.append(
                 f"Loaded {self.catalog_name} with {len(self.isotope_catalog)} entries as custom catalog.\n"
             )
 
@@ -575,7 +568,10 @@ class UserInterface(QtWidgets.QMainWindow):
     @Slot()
     def calc_cal_factors(self):
         """Function for calculating the conversion factors for the calibration."""
-        scaling_factor, horizontal_offset = self.process_data_calibrate.calibrate(
+        (
+            self.scaling_factor,
+            self.horizontal_offset,
+        ) = self.process_data_calibrate.calibrate(
             known_energies=[self.energy_spin_1.value(), self.energy_spin_2.value()],
             found_energies=[
                 self.fitted_calibration_peaks.iloc[:, 0].values[0],
@@ -583,8 +579,28 @@ class UserInterface(QtWidgets.QMainWindow):
             ],
         )
         self.calibration_log.append(
-            f"Calibration results\nConversion factor: {scaling_factor:.2f} keV/mV\nEnergy offset: {horizontal_offset:.2f} keV\n"
+            f"CALIBRATION RESULTS:\nConversion factor: {self.scaling_factor:.2f} keV/mV\nEnergy offset: {self.horizontal_offset:.2f} keV\n"
         )
+
+    @Slot()
+    def apply_calibration(self):
+        file_paths, _ = QtWidgets.QFileDialog.getOpenFileNames(
+            filter="CSV files (*.csv)"
+        )
+        if file_paths:
+            for file_path in file_paths:
+                file_path = Path(file_path)
+                opened_file = pd.read_csv(file_path)
+                calibrated_data = self.process_data_calibrate.apply_calibration(
+                    data=opened_file,
+                    scaling_factor=self.scaling_factor,
+                    horizontal_offset=self.horizontal_offset,
+                )
+
+                filename_extended = file_path.stem + "_calibrated" + file_path.suffix
+                new_filename = file_path.parent / filename_extended
+                calibrated_data.to_csv(new_filename, index=False)
+                self.calibration_log.append(f"Saved {filename_extended}.\n")
 
 
 def main():
