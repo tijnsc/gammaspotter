@@ -15,6 +15,7 @@ class UserInterface(QtWidgets.QMainWindow):
 
         # load default isotope catalog
         self.isotope_catalog = pd.read_csv("catalogs/gamma-energies-common.csv")
+        self.catalog_name = "default catalog"
 
         self.central_widget = QtWidgets.QTabWidget()
         self.setCentralWidget(self.central_widget)
@@ -386,7 +387,7 @@ Dylan Telleman and Tijn Schuitevoerder
                 self.fit_peaks_x.insert(0, "peak", range(1, peak_count + 1))
 
                 self.analysis_log.append(
-                    f"FITTED {peak_count} PEAKS:\n{self.fit_peaks_x.to_markdown(index=False, tablefmt='plain', headers=['Peak', 'Energy [keV]', 'Standard Error [keV]'])}\n"
+                    f"FITTED {peak_count} PEAKS:\n{self.fit_peaks_x.to_markdown(index=False, tablefmt='plain', headers=['Peak', 'Energy [keV]', 'Std Err [keV]'])}\n"
                 )
 
     # maybe move this to model
@@ -424,6 +425,7 @@ Dylan Telleman and Tijn Schuitevoerder
             matches = mf.match_isotopes()
             result_length = self.result_length_spin.value()
             peak_count = len(self.fit_peaks_x)
+            self.analysis_log.append(f"Using {self.catalog_name} as isotope catalog.")
             self.analysis_log.append(f"MATCHED {peak_count} PEAKS:")
             for index in range(peak_count):
                 peak_nr = index + 1
