@@ -210,6 +210,7 @@ class UserInterface(QtWidgets.QMainWindow):
         for widget in widgets:
             widget.setEnabled(action)
 
+    @Slot()
     def load_catalog(self):
         filename, _ = QtWidgets.QFileDialog.getOpenFileName(filter="CSV files (*.csv)")
         if filename:
