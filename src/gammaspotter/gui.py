@@ -253,7 +253,7 @@ class UserInterface(QtWidgets.QMainWindow):
     @Slot()
     def send_to_analysis(self):
         # reusing code from open_file, might be better to move this to a function
-        self.central_widget.setCurrentIndex(0)
+        self.central_widget.setCurrentIndex(1)
         self.plot_widget_analyze.clear()
         self.plot_widget_analyze.setTitle("Calibrated Data")
         self.plot_widget_analyze.setLabel("left", "Counts")
@@ -282,15 +282,6 @@ class UserInterface(QtWidgets.QMainWindow):
 
             match self.central_widget.currentIndex():
                 case 0:
-                    self.clear_analysis_data()
-                    plot_widget = self.plot_widget_analyze
-                    self.process_data_analyze = ProcessData(opened_file)
-                    latest_data = self.process_data_analyze
-                    window_log = self.analysis_log
-                    self.show_analysis_funcs(True)
-                    x_unit = "keV"
-
-                case 1:
                     self.clear_calibration_data()
                     plot_widget = self.plot_widget_calibrate
                     self.process_data_calibrate = ProcessData(opened_file)
@@ -298,6 +289,14 @@ class UserInterface(QtWidgets.QMainWindow):
                     window_log = self.calibration_log
                     self.show_calibrate_funcs(True)
                     x_unit = "mV"
+                case 1:
+                    self.clear_analysis_data()
+                    plot_widget = self.plot_widget_analyze
+                    self.process_data_analyze = ProcessData(opened_file)
+                    latest_data = self.process_data_analyze
+                    window_log = self.analysis_log
+                    self.show_analysis_funcs(True)
+                    x_unit = "keV"
 
             plot_widget.clear()
 
