@@ -1,10 +1,11 @@
 import sys
 
 from PySide6 import QtWidgets
+from PySide6.QtWebEngineWidgets import QWebEngineView
 import pyqtgraph as pg
 import pandas as pd
 
-from PySide6.QtCore import Slot
+from PySide6.QtCore import Slot, QUrl
 from gammaspotter.process_data import ProcessData
 from gammaspotter.match_features import MatchFeatures
 
@@ -177,30 +178,9 @@ class UserInterface(QtWidgets.QMainWindow):
     def setup_help_tab(self):
         vbox_main = QtWidgets.QVBoxLayout(self.help_tab)
 
-        hbox_btns = QtWidgets.QHBoxLayout()
-        vbox_main.addLayout(hbox_btns)
-
-        self.analyze_button = QtWidgets.QPushButton("Help with analysis")
-        hbox_btns.addWidget(self.analyze_button)
-
-        self.calibrate_button = QtWidgets.QPushButton("Help with calibration")
-        hbox_btns.addWidget(self.calibrate_button)
-
-        self.analyze_button.clicked.connect(self.analyze_help)
-        self.calibrate_button.clicked.connect(self.calibrate_help)
-
-        vbox_main.addWidget(QtWidgets.QLabel("Helpdesk"))
-        self.help_log = QtWidgets.QTextEdit()
-        self.help_log.setReadOnly(True)
-        self.help_log.append(
-            """This is a helpdesk for if you find yourself having problems with the program.
-Choose which tab you having problems with.
-
-Hope we can help you well,
-Dylan Telleman and Tijn Schuitevoerder
-"""
-        )
-        vbox_main.addWidget(self.help_log)
+        self.webEngineView = QWebEngineView()
+        self.webEngineView.load(QUrl("https://tijnsc.github.io/gammaspotter"))
+        vbox_main.addWidget(self.webEngineView)
 
     def show_analysis_funcs(self, action: bool):
         widgets = [
@@ -441,29 +421,6 @@ Dylan Telleman and Tijn Schuitevoerder
                 else:
                     self.analysis_log.append(f"--- Peak {peak_nr} has no matches. ---")
             self.analysis_log.append("")
-
-    @Slot()
-    def analyze_help(self):
-        self.help_log.clear()
-        self.help_log.append(
-            """On the right hand side of the application you can see an 'Open Measurement' button.
-This is where you can choose which measurement you want to use.
-
-Right under the button there is a changable box 'Peak detection treshold'
-This determines how sensitive the program is with finding the peaks.
-When the threshold is set higher it will find less peaks.
-
-Under the treshold there is a changable box 'Fit domain width'.
-You can change how wide you want to fit over the found peaks.
-"""
-        )
-
-    @Slot()
-    def calibrate_help(self):
-        self.help_log.clear()
-        self.help_log.append(
-            "This is the information for helping with the calibrate tab."
-        )
 
 
 def main():
