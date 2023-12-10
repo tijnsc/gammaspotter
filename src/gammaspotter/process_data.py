@@ -145,3 +145,20 @@ class ProcessData:
         horizontal_offset = mean(horizontal_offsets)
 
         return scaling_factor, horizontal_offset
+
+    def apply_calibration(
+        self, data: pd.DataFrame, scaling_factor: float, horizontal_offset: float
+    ):
+        """Applies the calibration to the data.
+
+        Args:
+            data (pd.DataFrame): the data that needs to be calibrated
+            scaling_factor (float): how much the the data needs to be scaled for it to have the right distance between the peaks
+            horizontal_offset (float): how far the the data needs to be moved so the peaks line up with the known energies in keV
+
+        Returns:
+            pd.DataFrame: the calibrated data
+        """
+        data.iloc[:, 0] = data.iloc[:, 0] * scaling_factor - horizontal_offset
+
+        return data
