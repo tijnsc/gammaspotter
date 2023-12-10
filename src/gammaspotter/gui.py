@@ -568,6 +568,7 @@ class UserInterface(QtWidgets.QMainWindow):
         file_paths, _ = QtWidgets.QFileDialog.getOpenFileNames(
             filter="CSV files (*.csv)"
         )
+        saved_files = []
         if file_paths:
             for file_path in file_paths:
                 file_path = Path(file_path)
@@ -581,7 +582,9 @@ class UserInterface(QtWidgets.QMainWindow):
                 filename_extended = file_path.stem + "_calibrated" + file_path.suffix
                 new_filename = file_path.parent / filename_extended
                 calibrated_data.to_csv(new_filename, index=False)
-                self.calibration_log.append(f"Saved {filename_extended}.\n")
+                saved_files.append(filename_extended)
+
+            self.calibration_log.append(f"Saved {', '.join(saved_files)}.\n")
 
 
 def main():
