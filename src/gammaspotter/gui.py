@@ -67,11 +67,11 @@ class UserInterface(QtWidgets.QMainWindow):
         match_hbox = QtWidgets.QHBoxLayout()
         form.addRow(match_hbox)
 
-        self.load_alt_catalog_btn = QtWidgets.QPushButton("Load alternative catalog")
-        match_hbox.addWidget(self.load_alt_catalog_btn)
-
         self.match_isotopes_btn = QtWidgets.QPushButton("Match isotopes")
         match_hbox.addWidget(self.match_isotopes_btn)
+
+        self.load_alt_catalog_btn = QtWidgets.QPushButton("Load alternative catalog")
+        match_hbox.addWidget(self.load_alt_catalog_btn)
 
         self.result_length_spin = QtWidgets.QSpinBox()
         self.result_length_spin.setSingleStep(1)
@@ -228,6 +228,15 @@ Dylan Telleman and Tijn Schuitevoerder
         ]
         for widget in widgets:
             widget.setEnabled(action)
+
+    def load_catalog(self):
+        filename, _ = QtWidgets.QFileDialog.getOpenFileName(filter="CSV files (*.csv)")
+        if filename:
+            self.isotope_catalog = pd.read_csv(filename)
+            self.catalog_name = filename.split("/")[-1]
+            self.calibration_log.append(
+                f"Loaded {self.catalog_name} with {len(self.isotope_catalog)} entries as custom catalog.\n"
+            )
 
     @Slot()
     def clear_analysis_log(self):
