@@ -17,8 +17,11 @@ class UserInterface(QtWidgets.QMainWindow):
         super().__init__()
 
         # load default isotope catalog
-        self.isotope_catalog = pd.read_csv("catalogs/gamma-energies-common.csv")
-        self.catalog_name = "default catalog"
+        file_path = Path(__file__).resolve()
+        catalog_path = file_path.parents[2] / "catalogs" / "gamma-energies-common.csv"
+
+        self.isotope_catalog = pd.read_csv(catalog_path)
+        self.catalog_name = catalog_path.name
 
         self.central_widget = QtWidgets.QTabWidget()
         self.setCentralWidget(self.central_widget)
@@ -496,7 +499,7 @@ class UserInterface(QtWidgets.QMainWindow):
                 )
             except RuntimeError:
                 self.analysis_log.append(
-                    "No peaks detected. Try lowering the peak detection threshold or adjusting the domain width.\n"
+                    "Peaks could not be fitted. Try lowering the peak detection threshold or adjusting the domain width.\n"
                 )
             else:
                 self.vlines = []
