@@ -38,6 +38,7 @@ class UserInterface(QtWidgets.QMainWindow):
     def setup_calibrate_tab(self):
         hbox_main = QtWidgets.QHBoxLayout(self.calibrate_tab)
         self.plot_widget_calibrate = pg.PlotWidget()
+        self.cal_data_loaded = False
         hbox_main.addWidget(self.plot_widget_calibrate)
 
         vbox_menu = QtWidgets.QVBoxLayout()
@@ -101,6 +102,9 @@ class UserInterface(QtWidgets.QMainWindow):
         clear_calibration_data_btn = QtWidgets.QPushButton("Clear Data")
         hbox_clear.addWidget(clear_calibration_data_btn)
 
+        self.v_line_mouse_left = pg.InfiniteLine(pen=pg.mkPen(color="g", width=1))
+        self.v_line_mouse_right = pg.InfiniteLine(pen=pg.mkPen(color="g", width=1))
+
         self.show_calibrate_funcs(False)
 
         self.plot_widget_calibrate.scene().sigMouseClicked.connect(
@@ -113,12 +117,15 @@ class UserInterface(QtWidgets.QMainWindow):
         # self.find_peaks_btn.clicked.connect(self.detect_cal_peaks)
         # self.send_to_analysis_btn.clicked.connect(self.send_to_analysis)
 
+        self.plot_widget_calibrate.scene().sigMouseMoved.connect(self.cal_mouse_domain)
+
         clear_calibration_log_btn.clicked.connect(self.clear_calibration_log)
         clear_calibration_data_btn.clicked.connect(self.clear_calibration_data)
 
     def setup_analyze_tab(self):
         hbox_main = QtWidgets.QHBoxLayout(self.analyze_tab)
         self.plot_widget_analyze = pg.PlotWidget()
+        self.analyze_data_loaded = False
         hbox_main.addWidget(self.plot_widget_analyze)
 
         vbox_menu = QtWidgets.QVBoxLayout()
@@ -261,6 +268,7 @@ class UserInterface(QtWidgets.QMainWindow):
         except:
             pass
         else:
+            self.analyze_data_loaded = False
             self.show_analysis_funcs(False)
             self.plot_widget_analyze.clear()
             self.plot_widget_analyze.setTitle("")
@@ -272,6 +280,7 @@ class UserInterface(QtWidgets.QMainWindow):
         except:
             pass
         else:
+            self.cal_data_loaded = False
             self.show_calibrate_funcs(False)
             self.plot_widget_calibrate.clear()
             self.plot_widget_calibrate.setTitle("")
@@ -323,6 +332,7 @@ class UserInterface(QtWidgets.QMainWindow):
                     window_log = self.calibration_log
                     self.show_calibrate_funcs(True)
                     x_unit = "mV"
+                    self.cal_data_loaded = True
                 case 1:
                     self.clear_analysis_data()
                     plot_widget = self.plot_widget_analyze
@@ -331,6 +341,7 @@ class UserInterface(QtWidgets.QMainWindow):
                     window_log = self.analysis_log
                     self.show_analysis_funcs(True)
                     x_unit = "keV"
+                    self.analyze_data_loaded = True
 
             plot_widget.clear()
 
@@ -346,6 +357,9 @@ class UserInterface(QtWidgets.QMainWindow):
                 symbol=None,
                 pen={"color": "w", "width": 3},
             )
+
+            plot_widget.autoRange()
+            plot_widget.disableAutoRange()
             window_log.append(f"Opened {filename}.\n")
 
     @Slot()
@@ -408,7 +422,7 @@ class UserInterface(QtWidgets.QMainWindow):
             pass
         self.vlines_cal = []
         for x_peak in x_positions:
-            vline = pg.InfiniteLine(pos=x_peak)
+            vline = pg.InfiniteLine(pos=x_peak, pen=pg.mkPen(color="y", width=1))
             self.vlines_cal.append(vline)
             self.plot_widget_calibrate.addItem(vline)
 
@@ -418,6 +432,26 @@ class UserInterface(QtWidgets.QMainWindow):
         else:
             self.energy_spin_1.setEnabled(False)
             self.energy_spin_2.setEnabled(False)
+
+    # not a very good solution, but it works
+    @Slot()
+    def cal_mouse_domain(self, event):
+        """Function for displaying the domain lines in the plot at mouse postition."""
+        if self.cal_data_loaded:
+            pos_click = self.plot_widget_calibrate.plotItem.vb.mapSceneToView(event)
+            try:
+                self.plot_widget_calibrate.removeItem(self.v_line_mouse_left)
+                self.plot_widget_calibrate.removeItem(self.v_line_mouse_right)
+            except:
+                pass
+            self.v_line_mouse_left.setPos(
+                pos_click.x() - (self.domain_width_spin_cal.value() / 2)
+            )
+            self.v_line_mouse_right.setPos(
+                pos_click.x() + (self.domain_width_spin_cal.value() / 2)
+            )
+            self.plot_widget_calibrate.addItem(self.v_line_mouse_left)
+            self.plot_widget_calibrate.addItem(self.v_line_mouse_right)
 
     @Slot()
     def plot_peaks(self):
@@ -468,7 +502,11 @@ class UserInterface(QtWidgets.QMainWindow):
             else:
                 self.vlines = []
                 for peak_nr, x_peak in enumerate(self.fit_peaks_x.iloc[:, 0]):
-                    vline = pg.InfiniteLine(pos=x_peak, label=f"{peak_nr + 1}")
+                    vline = pg.InfiniteLine(
+                        pos=x_peak,
+                        label=f"{peak_nr + 1}",
+                        pen=pg.mkPen(color="y", width=1),
+                    )
                     self.vlines.append(vline)
                     self.plot_widget_analyze.addItem(vline)
 
@@ -478,29 +516,6 @@ class UserInterface(QtWidgets.QMainWindow):
                 self.analysis_log.append(
                     f"FITTED {peak_count} PEAKS:\n{self.fit_peaks_x.to_markdown(index=False, tablefmt='plain', headers=['Peak', 'Energy [keV]', 'Std Err [keV]'])}\n"
                 )
-
-    # # maybe move this to model
-    # @Slot()
-    # def detect_cal_peaks(self):
-    #     """Find the six most prominent peaks in the calibration spectrum."""
-    #     found_peaks_count = 10000
-    #     prominence = 10
-    #     while found_peaks_count > 2:
-    #         found_peaks = self.process_data_calibrate.fit_peaks(
-    #             domain_width=10, prominence=prominence
-    #         )
-    #         found_peaks_count = len(found_peaks)
-    #         prominence += 50
-
-    #     self.vlines_cal = []
-    #     for x_peak in found_peaks.iloc[:, 0]:
-    #         vline = pg.InfiniteLine(pos=x_peak, label=f"{round(x_peak, 1)}")
-    #         self.vlines_cal.append(vline)
-    #         self.plot_widget_calibrate.addItem(vline)
-
-    #     self.calibration_log.append(
-    #         f"DETECTED {len(found_peaks)} PEAKS:\n{found_peaks.to_markdown(index=False, tablefmt='plain', headers=['Energy [mV]', 'Counts'])}\n"
-    #     )
 
     @Slot()
     def find_isotopes(self):
