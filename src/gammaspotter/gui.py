@@ -75,7 +75,7 @@ class UserInterface(QtWidgets.QMainWindow):
         self.energy_spin_2.setValue(0)
         form.addRow("Energy 2 [keV]", self.energy_spin_2)
 
-        self.calc_factors_btn = QtWidgets.QPushButton("Calculate conversion factors")
+        self.calc_factors_btn = QtWidgets.QPushButton("Calculate Conversion Factors")
         form.addRow(self.calc_factors_btn)
 
         self.allow_calibration_steps(False)
@@ -415,9 +415,11 @@ class UserInterface(QtWidgets.QMainWindow):
                         }
                     )
                     try:
-                        self.fitted_peaks = self.process_data_calibrate.fit_peaks(
-                            peaks=selected_peaks,
-                            domain_width=self.domain_width_spin_cal.value(),
+                        self.fitted_calibration_peaks = (
+                            self.process_data_calibrate.fit_peaks(
+                                peaks=selected_peaks,
+                                domain_width=self.domain_width_spin_cal.value(),
+                            )
                         )
                     except RuntimeError:
                         self.calibration_log.append(
@@ -429,10 +431,10 @@ class UserInterface(QtWidgets.QMainWindow):
                         self.cal_click_y.clear()
                     else:
                         # everything went well, plot the lines and save the energies with uncertainties
-                        self.plot_vlines_cal(self.fitted_peaks["energy"])
-                        if len(self.fitted_peaks) == 2:
+                        self.plot_vlines_cal(self.fitted_calibration_peaks["energy"])
+                        if len(self.fitted_calibration_peaks) == 2:
                             self.calibration_log.append(
-                                f"Selected peaks:\n{self.fitted_peaks.to_markdown(index=False, tablefmt='plain', headers=['Energy [mV]', 'Std Err [mV]'])}\n"
+                                f"Selected peaks:\n{self.fitted_calibration_peaks.to_markdown(index=False, tablefmt='plain', headers=['Energy [mV]', 'Std Err [mV]'])}\n"
                             )
             else:
                 self.calibration_log.append(
@@ -573,7 +575,16 @@ class UserInterface(QtWidgets.QMainWindow):
     @Slot()
     def calc_cal_factors(self):
         """Function for calculating the conversion factors for the calibration."""
-        pass
+        scaling_factor, horizontal_offset = self.process_data_calibrate.calibrate(
+            known_energies=[self.energy_spin_1.value(), self.energy_spin_2.value()],
+            found_energies=[
+                self.fitted_calibration_peaks.iloc[:, 0].values[0],
+                self.fitted_calibration_peaks.iloc[:, 0].values[1],
+            ],
+        )
+        self.calibration_log.append(
+            f"Calibration results\nConversion factor: {scaling_factor:.2f} keV/mV\nEnergy offset: {horizontal_offset:.2f} keV\n"
+        )
 
 
 def main():
