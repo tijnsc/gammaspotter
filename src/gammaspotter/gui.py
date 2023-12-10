@@ -250,7 +250,22 @@ Dylan Telleman and Tijn Schuitevoerder
 
     @Slot()
     def send_to_analysis(self):
+        # reusing code from open_file, might be better to move this to a function
         self.central_widget.setCurrentIndex(0)
+        self.plot_widget_analyze.clear()
+        self.plot_widget_analyze.setTitle("Calibrated Data")
+        self.plot_widget_analyze.setLabel("left", "Counts")
+        self.plot_widget_analyze.setLabel("bottom", "Energy [keV]")
+        self.plot_widget_analyze.plot(
+            x=self.process_data_calibrate.data.iloc[:, 0],
+            y=self.process_data_calibrate.data.iloc[:, 1],
+            symbol=None,
+            pen={"color": "w", "width": 3},
+        )
+        self.process_data_analyze = self.process_data_calibrate
+        self.calibration_log.append("Sent data to analysis tab.\n")
+        self.analysis_log.append("Recieved data from calibration tab.\n")
+        self.show_analysis_funcs(True)
 
     @Slot()
     def open_file(self):
