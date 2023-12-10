@@ -59,6 +59,10 @@ class UserInterface(QtWidgets.QMainWindow):
         self.domain_width_spin_cal.setValue(5)
         form.addRow("Domain width", self.domain_width_spin_cal)
 
+        self.preset_energies = QtWidgets.QComboBox()
+        self.preset_energies.addItems(["---", "Na-22"])
+        form.addRow("Preset energies", self.preset_energies)
+
         self.energy_spin_1 = QtWidgets.QDoubleSpinBox()
         self.energy_spin_1.setSingleStep(0.1)
         self.energy_spin_1.setRange(0, 1000000)
@@ -70,6 +74,9 @@ class UserInterface(QtWidgets.QMainWindow):
         self.energy_spin_2.setRange(0, 1000000)
         self.energy_spin_2.setValue(0)
         form.addRow("Energy 2 [keV]", self.energy_spin_2)
+
+        self.calc_factors_btn = QtWidgets.QPushButton("Calculate conversion factors")
+        form.addRow(self.calc_factors_btn)
 
         self.allow_calibration_steps(False)
 
@@ -107,17 +114,19 @@ class UserInterface(QtWidgets.QMainWindow):
 
         self.show_calibrate_funcs(False)
 
+        self.plot_widget_calibrate.scene().sigMouseMoved.connect(self.cal_mouse_domain)
         self.plot_widget_calibrate.scene().sigMouseClicked.connect(
             self.add_calibration_point
         )
+
+        self.preset_energies.currentIndexChanged.connect(self.set_preset_energies)
+        self.calc_factors_btn.clicked.connect(self.calc_cal_factors)
 
         open_btn.clicked.connect(self.open_file)
         self.reset_axis_btn.clicked.connect(self.plot_widget_calibrate.autoRange)
 
         # self.find_peaks_btn.clicked.connect(self.detect_cal_peaks)
         # self.send_to_analysis_btn.clicked.connect(self.send_to_analysis)
-
-        self.plot_widget_calibrate.scene().sigMouseMoved.connect(self.cal_mouse_domain)
 
         clear_calibration_log_btn.clicked.connect(self.clear_calibration_log)
         clear_calibration_data_btn.clicked.connect(self.clear_calibration_data)
@@ -242,6 +251,16 @@ class UserInterface(QtWidgets.QMainWindow):
         ]
         for widget in widgets:
             widget.setEnabled(action)
+
+    @Slot()
+    def set_preset_energies(self):
+        match self.preset_energies.currentText():
+            case "---":
+                self.energy_spin_1.setValue(0)
+                self.energy_spin_2.setValue(0)
+            case "Na-22":
+                self.energy_spin_1.setValue(511.0034)
+                self.energy_spin_2.setValue(1274.5)
 
     @Slot()
     def load_catalog(self):
@@ -550,6 +569,11 @@ class UserInterface(QtWidgets.QMainWindow):
                 else:
                     self.analysis_log.append(f"--- Peak {peak_nr} has no matches. ---")
             self.analysis_log.append("")
+
+    @Slot()
+    def calc_cal_factors(self):
+        """Function for calculating the conversion factors for the calibration."""
+        pass
 
 
 def main():
