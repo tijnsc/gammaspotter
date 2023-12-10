@@ -113,41 +113,35 @@ class ProcessData:
 
         return x_positions_df
 
-    # def calibrate(self, known_energies: list[float]) -> tuple[float]:
-    #     """Function for making the calibration so the plot is given in keV and not in mV or any other unit.
+    def calibrate(
+        self, known_energies: list[float], found_energies: list[float]
+    ) -> tuple[float]:
+        """Function for making the calibration so the plot is given in keV and not in mV or any other unit.
 
-    #     Args:
-    #         known_energies (list[float]): list of energies that correspond with a known source
+        Args:
+            known_energies (list[float]): list of energies that correspond with a known source
+            found_energies (list[float]): list of energies that were found in the spectrum
 
-    #     Raises:
-    #         Exception: when there occures an error it tells you to use a different measurement
+        Raises:
+            Exception: when there occures an error it tells you to use a different measurement
 
-    #     Returns:
-    #         scaling_factor[float]: how much the two peaks need to be scaled for them to have the right distance between them
-    #         horizontal_offset[float]: how far the two peaks need to be moved so they line up with the known energies in keV
-    #     """
-    #     detected_peak_fit = []
-    #     results = self.fit_peaks(width=10)
-    #     for result in results:
-    #         detected_peak_fit.append(result.values["cen"])
+        Returns:
+            scaling_factor[float]: how much the two peaks need to be scaled for them to have the right distance between them
+            horizontal_offset[float]: how far the two peaks need to be moved so they line up with the known energies in keV
+        """
+        known_energies = sorted(known_energies)
+        found_energies = sorted(found_energies)
 
-    #     if len(detected_peak_fit) != len(known_energies):
-    #         raise Exception(
-    #             "Detected and reference peak mismatch. Please try another measurement or use another isotope."
-    #         )
+        diff_literature = known_energies[-1] - known_energies[0]
+        diff_measured = found_energies[-1] - found_energies[0]
 
-    #     detected_peak_fit = sorted(detected_peak_fit)
-    #     known_energies = sorted(known_energies)
+        scaling_factor = diff_literature / diff_measured
+        horizontal_offsets = []
+        for peak_nr in range(len(found_energies)):
+            horizontal_offsets.append(
+                found_energies[peak_nr] * scaling_factor - known_energies[peak_nr]
+            )
 
-    #     diff_meas = detected_peak_fit[-1] - detected_peak_fit[0]
-    #     diff_ref = known_energies[-1] - known_energies[0]
+        horizontal_offset = mean(horizontal_offsets)
 
-    #     scaling_factor = diff_ref / diff_meas
-    #     horizontal_offsets = []
-    #     for peak_nr in range(len(detected_peak_fit)):
-    #         horizontal_offsets.append(
-    #             detected_peak_fit[peak_nr] * scaling_factor - known_energies[peak_nr]
-    #         )
-
-    #     horizontal_offset = mean(horizontal_offsets)
-    #     return scaling_factor, horizontal_offset
+        return scaling_factor, horizontal_offset
