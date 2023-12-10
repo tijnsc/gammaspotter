@@ -298,6 +298,7 @@ class UserInterface(QtWidgets.QMainWindow):
             plot_widget.setTitle(filename.split("/")[-1])
             plot_widget.setLabel("left", "Counts")
             plot_widget.setLabel("bottom", f"Energy [{x_unit}]")
+            plot_widget.showGrid(x=True, y=True)
 
             spectrum_data = latest_data.data
             plot_widget.plot(
