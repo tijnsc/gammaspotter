@@ -4,8 +4,9 @@ from PySide6 import QtWidgets
 from PySide6.QtWebEngineWidgets import QWebEngineView
 import pyqtgraph as pg
 import pandas as pd
+from collections import deque
 
-from PySide6.QtCore import Slot, QUrl
+from PySide6.QtCore import Slot, QUrl, Qt
 from gammaspotter.process_data import ProcessData
 from gammaspotter.match_features import MatchFeatures
 
@@ -48,14 +49,37 @@ class UserInterface(QtWidgets.QMainWindow):
         open_btn = QtWidgets.QPushButton("Open Measurement")
         form.addRow(open_btn)
 
-        self.find_peaks_btn = QtWidgets.QPushButton("Find Peaks")
-        form.addRow(self.find_peaks_btn)
+        self.reset_axis_btn = QtWidgets.QPushButton("Reset Axis")
+        form.addRow(self.reset_axis_btn)
 
-        self.save_cal_btn = QtWidgets.QPushButton("Save calibrated data")
-        form.addRow(self.save_cal_btn)
+        self.domain_width_spin_cal = QtWidgets.QSpinBox()
+        self.domain_width_spin_cal.setSingleStep(1)
+        self.domain_width_spin_cal.setRange(1, 1000000)
+        self.domain_width_spin_cal.setValue(5)
+        form.addRow("Domain width", self.domain_width_spin_cal)
 
-        self.send_to_analysis_btn = QtWidgets.QPushButton("Send data to analyze tab")
-        form.addRow(self.send_to_analysis_btn)
+        self.energy_spin_1 = QtWidgets.QDoubleSpinBox()
+        self.energy_spin_1.setSingleStep(0.1)
+        self.energy_spin_1.setRange(0, 1000000)
+        self.energy_spin_1.setValue(0)
+        self.energy_spin_1.setEnabled(False)
+        form.addRow("Energy 1 [keV]", self.energy_spin_1)
+
+        self.energy_spin_2 = QtWidgets.QDoubleSpinBox()
+        self.energy_spin_2.setSingleStep(0.1)
+        self.energy_spin_2.setRange(0, 1000000)
+        self.energy_spin_2.setValue(0)
+        self.energy_spin_2.setEnabled(False)
+        form.addRow("Energy 2 [keV]", self.energy_spin_2)
+
+        # self.find_peaks_btn = QtWidgets.QPushButton("Find Peaks")
+        # form.addRow(self.find_peaks_btn)
+
+        # self.save_cal_btn = QtWidgets.QPushButton("Save calibrated data")
+        # form.addRow(self.save_cal_btn)
+
+        # self.send_to_analysis_btn = QtWidgets.QPushButton("Send data to analyze tab")
+        # form.addRow(self.send_to_analysis_btn)
 
         line = QtWidgets.QFrame()
         line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -79,10 +103,15 @@ class UserInterface(QtWidgets.QMainWindow):
 
         self.show_calibrate_funcs(False)
 
-        open_btn.clicked.connect(self.open_file)
+        self.plot_widget_calibrate.scene().sigMouseClicked.connect(
+            self.add_calibration_point
+        )
 
-        self.find_peaks_btn.clicked.connect(self.detect_cal_peaks)
-        self.send_to_analysis_btn.clicked.connect(self.send_to_analysis)
+        open_btn.clicked.connect(self.open_file)
+        self.reset_axis_btn.clicked.connect(self.plot_widget_calibrate.autoRange)
+
+        # self.find_peaks_btn.clicked.connect(self.detect_cal_peaks)
+        # self.send_to_analysis_btn.clicked.connect(self.send_to_analysis)
 
         clear_calibration_log_btn.clicked.connect(self.clear_calibration_log)
         clear_calibration_data_btn.clicked.connect(self.clear_calibration_data)
@@ -198,9 +227,11 @@ class UserInterface(QtWidgets.QMainWindow):
 
     def show_calibrate_funcs(self, action: bool):
         widgets = [
-            self.find_peaks_btn,
-            self.save_cal_btn,
-            self.send_to_analysis_btn,
+            self.reset_axis_btn,
+            self.domain_width_spin_cal,
+            # self.find_peaks_btn,
+            # self.save_cal_btn,
+            # self.send_to_analysis_btn,
         ]
         for widget in widgets:
             widget.setEnabled(action)
@@ -244,6 +275,14 @@ class UserInterface(QtWidgets.QMainWindow):
             self.show_calibrate_funcs(False)
             self.plot_widget_calibrate.clear()
             self.plot_widget_calibrate.setTitle("")
+        finally:
+            # initialize the calibration point deques
+            self.cal_click_x = deque(maxlen=2)
+            self.cal_click_y = deque(maxlen=2)
+
+            self.energy_spin_1.setEnabled(False)
+            self.energy_spin_2.setEnabled(False)
+
     # @Slot()
     # def send_to_analysis(self):
     #     # reusing code from open_file, might be better to move this to a function
@@ -271,9 +310,9 @@ class UserInterface(QtWidgets.QMainWindow):
         if filename:
             opened_file = pd.read_csv(filename)
 
-            opened_file.iloc[:, 0] = (
-                opened_file.iloc[:, 0] * 26.85781161331581 - 33.821059315931734
-            )
+            # opened_file.iloc[:, 0] = (
+            #     opened_file.iloc[:, 0] * 26.85781161331581 - 33.821059315931734
+            # )
 
             match self.central_widget.currentIndex():
                 case 0:
@@ -308,6 +347,77 @@ class UserInterface(QtWidgets.QMainWindow):
                 pen={"color": "w", "width": 3},
             )
             window_log.append(f"Opened {filename}.\n")
+
+    @Slot()
+    def add_calibration_point(self, event):
+        if event.button() == Qt.LeftButton:
+            pos_click = event.scenePos()
+            pos_click = self.plot_widget_calibrate.plotItem.vb.mapSceneToView(pos_click)
+
+            if (
+                pos_click.x() > self.process_data_calibrate.data.iloc[:, 0].min()
+                and pos_click.x() < self.process_data_calibrate.data.iloc[:, 0].max()
+                and pos_click.y() > self.process_data_calibrate.data.iloc[:, 1].min()
+                and pos_click.y() < self.process_data_calibrate.data.iloc[:, 1].max()
+            ):
+                # try except block for when the user clicks before data is loaded
+                try:
+                    self.cal_click_x.append(pos_click.x())
+                    self.cal_click_y.append(pos_click.y())
+                except AttributeError:
+                    pass
+                else:
+                    # can have length of 2 at most
+                    selected_peaks = pd.DataFrame(
+                        {
+                            "energy": self.cal_click_x,
+                            "counts": self.cal_click_y,
+                        }
+                    )
+                    try:
+                        self.fitted_peaks = self.process_data_calibrate.fit_peaks(
+                            peaks=selected_peaks,
+                            domain_width=self.domain_width_spin_cal.value(),
+                        )
+                    except RuntimeError:
+                        self.calibration_log.append(
+                            "The selected peaks could not be analyzed, please try selecting different peaks.\n"
+                        )
+                        # clear the lines and reset point deques
+                        self.plot_vlines_cal([])
+                        self.cal_click_x.clear()
+                        self.cal_click_y.clear()
+                    else:
+                        # everything went well, plot the lines and save the energies with uncertainties
+                        self.plot_vlines_cal(self.fitted_peaks["energy"])
+                        if len(self.fitted_peaks) == 2:
+                            self.calibration_log.append(
+                                f"Selected peaks:\n{self.fitted_peaks.to_markdown(index=False, tablefmt='plain', headers=['Energy [mV]', 'Std Err [mV]'])}\n"
+                            )
+            else:
+                self.calibration_log.append(
+                    "Please select a peak within the range of the data.\n"
+                )
+
+    def plot_vlines_cal(self, x_positions: list):
+        """Function for plotting the vertical lines in the calibration plot."""
+        try:
+            for vline in self.vlines_cal:
+                self.plot_widget_calibrate.removeItem(vline)
+        except:
+            pass
+        self.vlines_cal = []
+        for x_peak in x_positions:
+            vline = pg.InfiniteLine(pos=x_peak)
+            self.vlines_cal.append(vline)
+            self.plot_widget_calibrate.addItem(vline)
+
+        if len(x_positions) == 2:
+            self.energy_spin_1.setEnabled(True)
+            self.energy_spin_2.setEnabled(True)
+        else:
+            self.energy_spin_1.setEnabled(False)
+            self.energy_spin_2.setEnabled(False)
 
     @Slot()
     def plot_peaks(self):
