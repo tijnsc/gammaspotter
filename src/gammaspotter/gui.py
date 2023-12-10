@@ -81,6 +81,7 @@ class UserInterface(QtWidgets.QMainWindow):
 
         self.apply_cal_btn = QtWidgets.QPushButton("Apply Calibration To Files")
         form.addRow(self.apply_cal_btn)
+        self.apply_cal_btn.setEnabled(False)
 
         self.allow_calibration_steps(False)
 
@@ -243,9 +244,6 @@ class UserInterface(QtWidgets.QMainWindow):
         widgets = [
             self.reset_axis_btn,
             self.domain_width_spin_cal,
-            # self.find_peaks_btn,
-            # self.save_cal_btn,
-            # self.send_to_analysis_btn,
         ]
         for widget in widgets:
             widget.setEnabled(action)
@@ -306,6 +304,7 @@ class UserInterface(QtWidgets.QMainWindow):
             self.cal_click_x = deque(maxlen=2)
             self.cal_click_y = deque(maxlen=2)
 
+            self.apply_cal_btn.setEnabled(False)
             self.allow_calibration_steps(False)
 
     def allow_calibration_steps(self, action: bool):
@@ -316,36 +315,12 @@ class UserInterface(QtWidgets.QMainWindow):
         if not action:
             self.preset_energies.setCurrentIndex(0)
 
-    # @Slot()
-    # def send_to_analysis(self):
-    #     # reusing code from open_file, might be better to move this to a function
-    #     self.central_widget.setCurrentIndex(1)
-    #     self.plot_widget_analyze.clear()
-    #     self.plot_widget_analyze.setTitle("Calibrated Data")
-    #     self.plot_widget_analyze.setLabel("left", "Counts")
-    #     self.plot_widget_analyze.setLabel("bottom", "Energy [keV]")
-    #     self.plot_widget_analyze.showGrid(x=True, y=True)
-    #     self.plot_widget_analyze.plot(
-    #         x=self.process_data_calibrate.data.iloc[:, 0],
-    #         y=self.process_data_calibrate.data.iloc[:, 1],
-    #         symbol=None,
-    #         pen={"color": "w", "width": 3},
-    #     )
-    #     self.process_data_analyze = self.process_data_calibrate
-    #     self.calibration_log.append("Sent data to analysis tab.\n")
-    #     self.analysis_log.append("Recieved data from calibration tab.\n")
-    #     self.show_analysis_funcs(True)
-
     @Slot()
     def open_file(self):
         """Function for opening a file and showing it in the plot."""
         filename, _ = QtWidgets.QFileDialog.getOpenFileName(filter="CSV files (*.csv)")
         if filename:
             opened_file = pd.read_csv(filename)
-
-            # opened_file.iloc[:, 0] = (
-            #     opened_file.iloc[:, 0] * 26.85781161331581 - 33.821059315931734
-            # )
 
             match self.central_widget.currentIndex():
                 case 0:
@@ -586,6 +561,7 @@ class UserInterface(QtWidgets.QMainWindow):
         self.calibration_log.append(
             f"CALIBRATION RESULTS:\nConversion factor: {self.scaling_factor:.2f} keV/mV\nEnergy offset: {self.horizontal_offset:.2f} keV\n"
         )
+        self.apply_cal_btn.setEnabled(True)
 
     @Slot()
     def apply_calibration(self):
