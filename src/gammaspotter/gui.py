@@ -139,6 +139,9 @@ class UserInterface(QtWidgets.QMainWindow):
         open_btn = QtWidgets.QPushButton("Open calibrated data")
         form.addRow(open_btn)
 
+        self.reset_axis_btn_analyze = QtWidgets.QPushButton("Reset Axis")
+        form.addRow(self.reset_axis_btn_analyze)
+
         self.peak_thresh_spin = QtWidgets.QSpinBox()
         self.peak_thresh_spin.setSingleStep(15)
         self.peak_thresh_spin.setRange(1, 1000000)
@@ -195,6 +198,7 @@ class UserInterface(QtWidgets.QMainWindow):
         self.show_analysis_funcs(False)
 
         open_btn.clicked.connect(self.open_file)
+        self.reset_axis_btn_analyze.clicked.connect(self.plot_widget_analyze.autoRange)
 
         self.peak_thresh_spin.valueChanged.connect(self.plot_peaks)
         self.peaks_checkbox.stateChanged.connect(self.plot_peaks)
@@ -218,6 +222,7 @@ class UserInterface(QtWidgets.QMainWindow):
 
     def show_analysis_funcs(self, action: bool):
         widgets = [
+            self.reset_axis_btn_analyze,
             self.fit_checkbox,
             self.peaks_checkbox,
             self.peak_thresh_spin,
