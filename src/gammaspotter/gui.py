@@ -48,10 +48,6 @@ class UserInterface(QtWidgets.QMainWindow):
         open_btn = QtWidgets.QPushButton("Open Measurement")
         form.addRow(open_btn)
 
-        self.combo_isotope = QtWidgets.QComboBox()
-        self.combo_isotope.addItems(["Na-22", "Cs-137"])
-        form.addRow("Measured Isotope", self.combo_isotope)
-
         self.find_peaks_btn = QtWidgets.QPushButton("Find Peaks")
         form.addRow(self.find_peaks_btn)
 
@@ -202,7 +198,6 @@ class UserInterface(QtWidgets.QMainWindow):
 
     def show_calibrate_funcs(self, action: bool):
         widgets = [
-            self.combo_isotope,
             self.find_peaks_btn,
             self.save_cal_btn,
             self.send_to_analysis_btn,
