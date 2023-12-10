@@ -58,18 +58,16 @@ class ProcessData:
 
         return domains
 
-    def fit_peaks(self, domain_width: float, prominence: int) -> pd.DataFrame:
+    def fit_peaks(self, peaks: pd.DataFrame, domain_width: float) -> pd.DataFrame:
         """Takes raw spectrum data and performs a gaussian model fit on domains of the roughly detected peaks.
         This function returns more accurate peak positions than 'find_gamma_peaks'.
 
         Args:
+            peaks (pd.DataFrame): x and y values of peaks
             domain_width (float): width of the domains generated for analysis
-            prominence (int): sensitivity of the peak detection
-
         Returns:
             pd.DataFrame: x-values of fitted peaks with uncertainties
         """
-        peaks = self.find_gamma_peaks(prominence=prominence)
         peaks_x = peaks.iloc[:, 0]
         peaks_y = peaks.iloc[:, 1]
 
@@ -115,41 +113,41 @@ class ProcessData:
 
         return x_positions_df
 
-    def calibrate(self, known_energies: list[float]) -> tuple[float]:
-        """Function for making the calibration so the plot is given in keV and not in mV or any other unit.
+    # def calibrate(self, known_energies: list[float]) -> tuple[float]:
+    #     """Function for making the calibration so the plot is given in keV and not in mV or any other unit.
 
-        Args:
-            known_energies (list[float]): list of energies that correspond with a known source
+    #     Args:
+    #         known_energies (list[float]): list of energies that correspond with a known source
 
-        Raises:
-            Exception: when there occures an error it tells you to use a different measurement
+    #     Raises:
+    #         Exception: when there occures an error it tells you to use a different measurement
 
-        Returns:
-            scaling_factor[float]: how much the two peaks need to be scaled for them to have the right distance between them
-            horizontal_offset[float]: how far the two peaks need to be moved so they line up with the known energies in keV
-        """
-        detected_peak_fit = []
-        results = self.fit_peaks(width=10)
-        for result in results:
-            detected_peak_fit.append(result.values["cen"])
+    #     Returns:
+    #         scaling_factor[float]: how much the two peaks need to be scaled for them to have the right distance between them
+    #         horizontal_offset[float]: how far the two peaks need to be moved so they line up with the known energies in keV
+    #     """
+    #     detected_peak_fit = []
+    #     results = self.fit_peaks(width=10)
+    #     for result in results:
+    #         detected_peak_fit.append(result.values["cen"])
 
-        if len(detected_peak_fit) != len(known_energies):
-            raise Exception(
-                "Detected and reference peak mismatch. Please try another measurement or use another isotope."
-            )
+    #     if len(detected_peak_fit) != len(known_energies):
+    #         raise Exception(
+    #             "Detected and reference peak mismatch. Please try another measurement or use another isotope."
+    #         )
 
-        detected_peak_fit = sorted(detected_peak_fit)
-        known_energies = sorted(known_energies)
+    #     detected_peak_fit = sorted(detected_peak_fit)
+    #     known_energies = sorted(known_energies)
 
-        diff_meas = detected_peak_fit[-1] - detected_peak_fit[0]
-        diff_ref = known_energies[-1] - known_energies[0]
+    #     diff_meas = detected_peak_fit[-1] - detected_peak_fit[0]
+    #     diff_ref = known_energies[-1] - known_energies[0]
 
-        scaling_factor = diff_ref / diff_meas
-        horizontal_offsets = []
-        for peak_nr in range(len(detected_peak_fit)):
-            horizontal_offsets.append(
-                detected_peak_fit[peak_nr] * scaling_factor - known_energies[peak_nr]
-            )
+    #     scaling_factor = diff_ref / diff_meas
+    #     horizontal_offsets = []
+    #     for peak_nr in range(len(detected_peak_fit)):
+    #         horizontal_offsets.append(
+    #             detected_peak_fit[peak_nr] * scaling_factor - known_energies[peak_nr]
+    #         )
 
-        horizontal_offset = mean(horizontal_offsets)
-        return scaling_factor, horizontal_offset
+    #     horizontal_offset = mean(horizontal_offsets)
+    #     return scaling_factor, horizontal_offset

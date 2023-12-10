@@ -244,25 +244,25 @@ class UserInterface(QtWidgets.QMainWindow):
             self.show_calibrate_funcs(False)
             self.plot_widget_calibrate.clear()
             self.plot_widget_calibrate.setTitle("")
-
-    @Slot()
-    def send_to_analysis(self):
-        # reusing code from open_file, might be better to move this to a function
-        self.central_widget.setCurrentIndex(1)
-        self.plot_widget_analyze.clear()
-        self.plot_widget_analyze.setTitle("Calibrated Data")
-        self.plot_widget_analyze.setLabel("left", "Counts")
-        self.plot_widget_analyze.setLabel("bottom", "Energy [keV]")
-        self.plot_widget_analyze.plot(
-            x=self.process_data_calibrate.data.iloc[:, 0],
-            y=self.process_data_calibrate.data.iloc[:, 1],
-            symbol=None,
-            pen={"color": "w", "width": 3},
-        )
-        self.process_data_analyze = self.process_data_calibrate
-        self.calibration_log.append("Sent data to analysis tab.\n")
-        self.analysis_log.append("Recieved data from calibration tab.\n")
-        self.show_analysis_funcs(True)
+    # @Slot()
+    # def send_to_analysis(self):
+    #     # reusing code from open_file, might be better to move this to a function
+    #     self.central_widget.setCurrentIndex(1)
+    #     self.plot_widget_analyze.clear()
+    #     self.plot_widget_analyze.setTitle("Calibrated Data")
+    #     self.plot_widget_analyze.setLabel("left", "Counts")
+    #     self.plot_widget_analyze.setLabel("bottom", "Energy [keV]")
+    #     self.plot_widget_analyze.showGrid(x=True, y=True)
+    #     self.plot_widget_analyze.plot(
+    #         x=self.process_data_calibrate.data.iloc[:, 0],
+    #         y=self.process_data_calibrate.data.iloc[:, 1],
+    #         symbol=None,
+    #         pen={"color": "w", "width": 3},
+    #     )
+    #     self.process_data_analyze = self.process_data_calibrate
+    #     self.calibration_log.append("Sent data to analysis tab.\n")
+    #     self.analysis_log.append("Recieved data from calibration tab.\n")
+    #     self.show_analysis_funcs(True)
 
     @Slot()
     def open_file(self):
@@ -344,9 +344,12 @@ class UserInterface(QtWidgets.QMainWindow):
 
         if self.fit_checkbox.isChecked():
             try:
+                peaks = self.process_data_analyze.find_gamma_peaks(
+                    prominence=self.peak_thresh_spin.value()
+                )
                 self.fit_peaks_x = self.process_data_analyze.fit_peaks(
+                    peaks=peaks,
                     domain_width=self.domain_width_spin.value(),
-                    prominence=self.peak_thresh_spin.value(),
                 )
             except RuntimeError:
                 self.analysis_log.append(
@@ -366,28 +369,28 @@ class UserInterface(QtWidgets.QMainWindow):
                     f"FITTED {peak_count} PEAKS:\n{self.fit_peaks_x.to_markdown(index=False, tablefmt='plain', headers=['Peak', 'Energy [keV]', 'Std Err [keV]'])}\n"
                 )
 
-    # maybe move this to model
-    @Slot()
-    def detect_cal_peaks(self):
-        """Find the six most prominent peaks in the calibration spectrum."""
-        found_peaks_count = 10000
-        prominence = 10
-        while found_peaks_count > 2:
-            found_peaks = self.process_data_calibrate.fit_peaks(
-                domain_width=10, prominence=prominence
-            )
-            found_peaks_count = len(found_peaks)
-            prominence += 50
+    # # maybe move this to model
+    # @Slot()
+    # def detect_cal_peaks(self):
+    #     """Find the six most prominent peaks in the calibration spectrum."""
+    #     found_peaks_count = 10000
+    #     prominence = 10
+    #     while found_peaks_count > 2:
+    #         found_peaks = self.process_data_calibrate.fit_peaks(
+    #             domain_width=10, prominence=prominence
+    #         )
+    #         found_peaks_count = len(found_peaks)
+    #         prominence += 50
 
-        self.vlines_cal = []
-        for x_peak in found_peaks.iloc[:, 0]:
-            vline = pg.InfiniteLine(pos=x_peak, label=f"{round(x_peak, 1)}")
-            self.vlines_cal.append(vline)
-            self.plot_widget_calibrate.addItem(vline)
+    #     self.vlines_cal = []
+    #     for x_peak in found_peaks.iloc[:, 0]:
+    #         vline = pg.InfiniteLine(pos=x_peak, label=f"{round(x_peak, 1)}")
+    #         self.vlines_cal.append(vline)
+    #         self.plot_widget_calibrate.addItem(vline)
 
-        self.calibration_log.append(
-            f"DETECTED {len(found_peaks)} PEAKS:\n{found_peaks.to_markdown(index=False, tablefmt='plain', headers=['Energy [mV]', 'Counts'])}\n"
-        )
+    #     self.calibration_log.append(
+    #         f"DETECTED {len(found_peaks)} PEAKS:\n{found_peaks.to_markdown(index=False, tablefmt='plain', headers=['Energy [mV]', 'Counts'])}\n"
+    #     )
 
     @Slot()
     def find_isotopes(self):
