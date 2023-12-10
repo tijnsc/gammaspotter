@@ -22,17 +22,74 @@ class UserInterface(QtWidgets.QMainWindow):
         self.setCentralWidget(self.central_widget)
         self.setWindowTitle("Gammaspotter GUI")
 
-        self.analyze_tab = QtWidgets.QWidget()
         self.calibrate_tab = QtWidgets.QWidget()
+        self.analyze_tab = QtWidgets.QWidget()
         self.help_tab = QtWidgets.QWidget()
 
-        self.central_widget.addTab(self.analyze_tab, "Analyze")
         self.central_widget.addTab(self.calibrate_tab, "Calibrate")
+        self.central_widget.addTab(self.analyze_tab, "Analyze")
         self.central_widget.addTab(self.help_tab, "Help")
 
         self.setup_analyze_tab()
         self.setup_calibrate_tab()
         self.setup_help_tab()
+
+    def setup_calibrate_tab(self):
+        hbox_main = QtWidgets.QHBoxLayout(self.calibrate_tab)
+        self.plot_widget_calibrate = pg.PlotWidget()
+        hbox_main.addWidget(self.plot_widget_calibrate)
+
+        vbox_menu = QtWidgets.QVBoxLayout()
+        hbox_main.addLayout(vbox_menu)
+
+        form = QtWidgets.QFormLayout()
+        vbox_menu.addLayout(form)
+
+        open_btn = QtWidgets.QPushButton("Open Measurement")
+        form.addRow(open_btn)
+
+        self.combo_isotope = QtWidgets.QComboBox()
+        self.combo_isotope.addItems(["Na-22", "Cs-137"])
+        form.addRow("Measured Isotope", self.combo_isotope)
+
+        self.find_peaks_btn = QtWidgets.QPushButton("Find Peaks")
+        form.addRow(self.find_peaks_btn)
+
+        self.save_cal_btn = QtWidgets.QPushButton("Save calibrated data")
+        form.addRow(self.save_cal_btn)
+
+        self.send_to_analysis_btn = QtWidgets.QPushButton("Send data to analyze tab")
+        form.addRow(self.send_to_analysis_btn)
+
+        line = QtWidgets.QFrame()
+        line.setFrameShape(QtWidgets.QFrame.HLine)
+        line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        form.addRow(line)
+
+        vbox_menu.addWidget(QtWidgets.QLabel("Calibration Log"))
+        self.calibration_log = QtWidgets.QTextEdit()
+        self.calibration_log.setReadOnly(True)
+        self.calibration_log.append(
+            "Gammaspotter by Dylan Telleman and Tijn Schuitevoerder.\n"
+        )
+        vbox_menu.addWidget(self.calibration_log)
+
+        hbox_clear = QtWidgets.QHBoxLayout()
+        vbox_menu.addLayout(hbox_clear)
+        clear_calibration_log_btn = QtWidgets.QPushButton("Clear Log")
+        hbox_clear.addWidget(clear_calibration_log_btn)
+        clear_calibration_data_btn = QtWidgets.QPushButton("Clear Data")
+        hbox_clear.addWidget(clear_calibration_data_btn)
+
+        self.show_calibrate_funcs(False)
+
+        open_btn.clicked.connect(self.open_file)
+
+        self.find_peaks_btn.clicked.connect(self.detect_cal_peaks)
+        self.send_to_analysis_btn.clicked.connect(self.send_to_analysis)
+
+        clear_calibration_log_btn.clicked.connect(self.clear_calibration_log)
+        clear_calibration_data_btn.clicked.connect(self.clear_calibration_data)
 
     def setup_analyze_tab(self):
         hbox_main = QtWidgets.QHBoxLayout(self.analyze_tab)
@@ -117,63 +174,6 @@ class UserInterface(QtWidgets.QMainWindow):
 
         clear_analysis_log_btn.clicked.connect(self.clear_analysis_log)
         clear_analysis_data_btn.clicked.connect(self.clear_analysis_data)
-
-    def setup_calibrate_tab(self):
-        hbox_main = QtWidgets.QHBoxLayout(self.calibrate_tab)
-        self.plot_widget_calibrate = pg.PlotWidget()
-        hbox_main.addWidget(self.plot_widget_calibrate)
-
-        vbox_menu = QtWidgets.QVBoxLayout()
-        hbox_main.addLayout(vbox_menu)
-
-        form = QtWidgets.QFormLayout()
-        vbox_menu.addLayout(form)
-
-        open_btn = QtWidgets.QPushButton("Open Measurement")
-        form.addRow(open_btn)
-
-        self.combo_isotope = QtWidgets.QComboBox()
-        self.combo_isotope.addItems(["Na-22", "Cs-137"])
-        form.addRow("Measured Isotope", self.combo_isotope)
-
-        self.find_peaks_btn = QtWidgets.QPushButton("Find Peaks")
-        form.addRow(self.find_peaks_btn)
-
-        self.save_cal_btn = QtWidgets.QPushButton("Save calibrated data")
-        form.addRow(self.save_cal_btn)
-
-        self.send_to_analysis_btn = QtWidgets.QPushButton("Send data to analyze tab")
-        form.addRow(self.send_to_analysis_btn)
-
-        line = QtWidgets.QFrame()
-        line.setFrameShape(QtWidgets.QFrame.HLine)
-        line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        form.addRow(line)
-
-        vbox_menu.addWidget(QtWidgets.QLabel("Calibration Log"))
-        self.calibration_log = QtWidgets.QTextEdit()
-        self.calibration_log.setReadOnly(True)
-        self.calibration_log.append(
-            "Gammaspotter by Dylan Telleman and Tijn Schuitevoerder.\n"
-        )
-        vbox_menu.addWidget(self.calibration_log)
-
-        hbox_clear = QtWidgets.QHBoxLayout()
-        vbox_menu.addLayout(hbox_clear)
-        clear_calibration_log_btn = QtWidgets.QPushButton("Clear Log")
-        hbox_clear.addWidget(clear_calibration_log_btn)
-        clear_calibration_data_btn = QtWidgets.QPushButton("Clear Data")
-        hbox_clear.addWidget(clear_calibration_data_btn)
-
-        self.show_calibrate_funcs(False)
-
-        open_btn.clicked.connect(self.open_file)
-
-        self.find_peaks_btn.clicked.connect(self.detect_cal_peaks)
-        self.send_to_analysis_btn.clicked.connect(self.send_to_analysis)
-
-        clear_calibration_log_btn.clicked.connect(self.clear_calibration_log)
-        clear_calibration_data_btn.clicked.connect(self.clear_calibration_data)
 
     def setup_help_tab(self):
         vbox_main = QtWidgets.QVBoxLayout(self.help_tab)
