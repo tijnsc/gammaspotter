@@ -13,6 +13,9 @@ class UserInterface(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
 
+        # load default isotope catalog
+        self.isotope_catalog = pd.read_csv("catalogs/gamma-energies-common.csv")
+
         self.central_widget = QtWidgets.QTabWidget()
         self.setCentralWidget(self.central_widget)
         self.setWindowTitle("Gammaspotter GUI")
@@ -61,8 +64,14 @@ class UserInterface(QtWidgets.QMainWindow):
         self.fit_checkbox = QtWidgets.QCheckBox()
         form.addRow("Show fitted peaks", self.fit_checkbox)
 
-        self.match_isotopes_btn = QtWidgets.QPushButton("Match Isotopes")
-        form.addRow(self.match_isotopes_btn)
+        match_hbox = QtWidgets.QHBoxLayout()
+        form.addRow(match_hbox)
+
+        self.load_alt_catalog_btn = QtWidgets.QPushButton("Load alternative catalog")
+        match_hbox.addWidget(self.load_alt_catalog_btn)
+
+        self.match_isotopes_btn = QtWidgets.QPushButton("Match isotopes")
+        match_hbox.addWidget(self.match_isotopes_btn)
 
         self.result_length_spin = QtWidgets.QSpinBox()
         self.result_length_spin.setSingleStep(1)
@@ -101,6 +110,7 @@ class UserInterface(QtWidgets.QMainWindow):
         self.domain_width_spin.valueChanged.connect(self.plot_fit_peaks)
         self.fit_checkbox.stateChanged.connect(self.plot_fit_peaks)
 
+        self.load_alt_catalog_btn.clicked.connect(self.load_catalog)
         self.match_isotopes_btn.clicked.connect(self.find_isotopes)
 
         clear_analysis_log_btn.clicked.connect(self.clear_analysis_log)
@@ -199,6 +209,7 @@ Dylan Telleman and Tijn Schuitevoerder
             self.domain_width_spin,
             self.match_isotopes_btn,
             self.result_length_spin,
+            self.load_alt_catalog_btn,
         ]
         for widget in widgets:
             widget.setEnabled(action)
@@ -273,6 +284,10 @@ Dylan Telleman and Tijn Schuitevoerder
         filename, _ = QtWidgets.QFileDialog.getOpenFileName(filter="CSV files (*.csv)")
         if filename:
             opened_file = pd.read_csv(filename)
+
+            opened_file.iloc[:, 0] = (
+                opened_file.iloc[:, 0] * 26.85781161331581 - 33.821059315931734
+            )
 
             match self.central_widget.currentIndex():
                 case 0:
@@ -391,7 +406,9 @@ Dylan Telleman and Tijn Schuitevoerder
     @Slot()
     def find_isotopes(self):
         try:
-            mf = MatchFeatures(self.fit_peaks_x)
+            mf = MatchFeatures(
+                data_peaks=self.fit_peaks_x, catalog_data=self.isotope_catalog
+            )
         except AttributeError:
             self.analysis_log.append("No peaks fitted. Try fitting the peaks first.\n")
         else:

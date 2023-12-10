@@ -4,18 +4,15 @@ import pandas as pd
 
 
 class MatchFeatures:
-    def __init__(self, data_peaks: pd.DataFrame, catalog_path: str = None):
+    def __init__(self, data_peaks: pd.DataFrame, catalog_data: pd.DataFrame):
+        """Class for matching the found gamma peaks with the literature energies.
+
+        Args:
+            data_peaks (pd.DataFrame): DataFrame containing the found gamma peaks.
+            catalog_data (pd.DataFrame): DataFrame containing the literature energies.
+        """
         self.data_peaks = data_peaks
-
-        if catalog_path is None:
-            # use built in catalog
-            self.catalog = "catalogs/gamma-energies.csv"
-        else:
-            self.catalog = catalog_path
-
-        catalog_data = pd.read_csv(self.catalog)
-        catalog_isotopes = catalog_data.iloc[:, [0, 1]].values.tolist()
-        self.catalog_isotopes = catalog_isotopes
+        self.catalog_isotopes = catalog_data.iloc[:, [0, 1]].values.tolist()
 
     def match_isotopes(self) -> pd.DataFrame:
         """Function for matching the found gamma peaks with the literature energies.
@@ -66,19 +63,3 @@ class MatchFeatures:
             float: Percentage of the given sigma.
         """
         return round(erfc(z_score / 5 * sqrt(2)) * 100, 2)
-
-
-if __name__ == "__main__":
-    # list_1 = [[1475.5, 15], [511, 5], [200, 20]]
-    # cat = [
-    #     ["Na-22", 1274.5],
-    #     ["Cs-137", 661.64],
-    #     ["Ba-133", 356],
-    #     ["Co-60", 1173.2],
-    #     ["Co-60", 1332.5],
-    #     ["K-40", 1460],
-    # ]
-    # print(MatchFeatures(list_1).match_isotopes())
-
-    # MatchFeatures(list_1)
-    pass
