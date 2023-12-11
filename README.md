@@ -6,7 +6,7 @@ Package for finding and identifying radioactive sources. The goal is to make it 
 
 **[Features](#features)** - **[Installation](#installation)**
 
-![gammaspotter_window](https://github.com/tijnsc/gammaspotter/blob/6efafd18579828d9297bbd78ad521452c05ba6d9/docs/img/gammaspotter_window.png)
+![gammaspotter_window](https://raw.githubusercontent.com/tijnsc/gammaspotter/main/.github/images/gammaspotter_window.png)
 
 ## Features
 
