@@ -147,10 +147,10 @@ class ProcessData:
 
         return scaling_factor, horizontal_offset
 
-    def apply_calibration(
+    def apply_cal_to_data(
         self, data: pd.DataFrame, scaling_factor: float, horizontal_offset: float
     ):
-        """Applies the calibration to the data.
+        """Function for applying the calibration to the data.
 
         Args:
             data (pd.DataFrame): the data that needs to be calibrated

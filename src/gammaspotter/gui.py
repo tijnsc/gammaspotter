@@ -348,7 +348,7 @@ class UserInterface(QtWidgets.QMainWindow):
 
         Args:
             action (bool): whether to enable or disable the widgets
-        """        
+        """
         self.energy_spin_1.setEnabled(action)
         self.energy_spin_2.setEnabled(action)
         self.preset_energies.setEnabled(action)
@@ -617,7 +617,7 @@ class UserInterface(QtWidgets.QMainWindow):
             for file_path in file_paths:
                 file_path = Path(file_path)
                 opened_file = pd.read_csv(file_path)
-                calibrated_data = self.process_data_calibrate.apply_calibration(
+                calibrated_data = self.process_data_calibrate.apply_cal_to_data(
                     data=opened_file,
                     scaling_factor=self.scaling_factor,
                     horizontal_offset=self.horizontal_offset,
