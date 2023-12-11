@@ -23,7 +23,10 @@ theme:
         name: Switch to light mode
 
 plugins:
-  - mkdocstrings
+- autorefs
+- mkdocstrings:
+    enabled: !ENV [ENABLE_MKDOCSTRINGS, true]
+    default_handler: python
 
 markdown_extensions:
 - toc:
