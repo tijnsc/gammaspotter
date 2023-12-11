@@ -51,4 +51,4 @@ To install the "gammaspotter" package, you can use [Poetry](https://python-poetr
 
 ## Quick usage
 
-See the [usage](tijnsc.github.io/gammaspotter/usage) section of the docs for more examples!
+See the [usage](https://tijnsc.github.io/gammaspotter/usage) section of the docs for more examples!
