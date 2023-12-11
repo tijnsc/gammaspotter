@@ -14,6 +14,12 @@ from gammaspotter.match_features import MatchFeatures
 
 class UserInterface(QtWidgets.QMainWindow):
     def __init__(self):
+        """Initializes the UserInterface class.
+
+        Loads the default isotope catalog from the specified file path.
+        Sets up the central widget as a QTabWidget and adds three tabs: Calibrate, Analyze, and Help.
+        Calls the setup_calibrate_tab(), setup_analyze_tab(), and setup_help_tab() methods to initialize the content of each tab.
+        """
         super().__init__()
 
         # load default isotope catalog
@@ -40,6 +46,13 @@ class UserInterface(QtWidgets.QMainWindow):
         self.setup_help_tab()
 
     def setup_calibrate_tab(self):
+        """
+        Set up the calibrate tab in the GUI.
+
+        This method initializes the layout and widgets for the calibrate tab in the GUI.
+        It creates a plot widget, buttons, spin boxes, and other UI elements necessary for calibration.
+        It also connects the appropriate signals and slots for user interaction.
+        """
         hbox_main = QtWidgets.QHBoxLayout(self.calibrate_tab)
         self.plot_widget_calibrate = pg.PlotWidget()
         self.cal_data_loaded = False
@@ -129,6 +142,13 @@ class UserInterface(QtWidgets.QMainWindow):
         clear_calibration_data_btn.clicked.connect(self.clear_calibration_data)
 
     def setup_analyze_tab(self):
+        """
+        Set up the analyze tab in the GUI.
+
+        This method initializes the layout and widgets for the analyze tab in the GUI.
+        It creates a plot widget, buttons, spin boxes, and other UI elements necessary for calibration.
+        It also connects the appropriate signals and slots for user interaction.
+        """
         hbox_main = QtWidgets.QHBoxLayout(self.analyze_tab)
         self.plot_widget_analyze = pg.PlotWidget()
         self.analyze_data_loaded = False
@@ -218,6 +238,7 @@ class UserInterface(QtWidgets.QMainWindow):
         clear_analysis_data_btn.clicked.connect(self.clear_analysis_data)
 
     def setup_help_tab(self):
+        """Set up the help tab in the GUI. Connects with the documentation website."""
         vbox_main = QtWidgets.QVBoxLayout(self.help_tab)
 
         self.webEngineView = QWebEngineView()
@@ -225,6 +246,11 @@ class UserInterface(QtWidgets.QMainWindow):
         vbox_main.addWidget(self.webEngineView)
 
     def show_analysis_funcs(self, action: bool):
+        """Toggles the enabled state of the widgets in the analyze tab. Also unchecks the checkboxes.
+
+        Args:
+            action (bool): whether to enable or disable the widgets
+        """
         widgets = [
             self.reset_axis_btn_analyze,
             self.fit_checkbox,
@@ -244,6 +270,7 @@ class UserInterface(QtWidgets.QMainWindow):
             checkbox.setChecked(False)
 
     def show_calibrate_funcs(self, action: bool):
+        """Toggles the enabled state of the widgets in the calibrate tab."""
         widgets = [
             self.reset_axis_btn,
             self.domain_width_spin_cal,
@@ -253,6 +280,7 @@ class UserInterface(QtWidgets.QMainWindow):
 
     @Slot()
     def set_preset_energies(self):
+        """Sets the energies of the preset energies spin boxes."""
         match self.preset_energies.currentText():
             case "---":
                 self.energy_spin_1.setValue(0)
@@ -263,6 +291,7 @@ class UserInterface(QtWidgets.QMainWindow):
 
     @Slot()
     def load_catalog(self):
+        """Function for loading a custom isotope catalog."""
         filename, _ = QtWidgets.QFileDialog.getOpenFileName(filter="CSV files (*.csv)")
         if filename:
             self.isotope_catalog = pd.read_csv(filename)
@@ -273,14 +302,17 @@ class UserInterface(QtWidgets.QMainWindow):
 
     @Slot()
     def clear_analysis_log(self):
+        """Function for clearing the analysis log."""
         self.analysis_log.clear()
 
     @Slot()
     def clear_calibration_log(self):
+        """Function for clearing the calibration log."""
         self.calibration_log.clear()
 
     @Slot()
     def clear_analysis_data(self):
+        """Reset the analysis tab to its initial state."""
         try:
             del self.process_data_analyze
         except:
@@ -293,6 +325,7 @@ class UserInterface(QtWidgets.QMainWindow):
 
     @Slot()
     def clear_calibration_data(self):
+        """Reset the calibration tab to its initial state."""
         try:
             del self.process_data_calibrate
         except:
@@ -311,6 +344,11 @@ class UserInterface(QtWidgets.QMainWindow):
             self.allow_calibration_steps(False)
 
     def allow_calibration_steps(self, action: bool):
+        """Toggles the enabled state of the calibration related widgets in the calibrate tab.
+
+        Args:
+            action (bool): whether to enable or disable the widgets
+        """        
         self.energy_spin_1.setEnabled(action)
         self.energy_spin_2.setEnabled(action)
         self.preset_energies.setEnabled(action)
@@ -320,7 +358,7 @@ class UserInterface(QtWidgets.QMainWindow):
 
     @Slot()
     def open_file(self):
-        """Function for opening a file and showing it in the plot."""
+        """Function for opening a file and showing it in the plot. Also initializes the ProcessData class."""
         filename, _ = QtWidgets.QFileDialog.getOpenFileName(filter="CSV files (*.csv)")
         if filename:
             opened_file = pd.read_csv(filename)
@@ -366,6 +404,7 @@ class UserInterface(QtWidgets.QMainWindow):
 
     @Slot()
     def add_calibration_point(self, event):
+        """Function for adding a calibration point to the plot. This will fit the peaks to a gaussian function and show the two fitted peaks in the plot."""
         if event.button() == Qt.LeftButton:
             pos_click = event.scenePos()
             pos_click = self.plot_widget_calibrate.plotItem.vb.mapSceneToView(pos_click)
@@ -521,6 +560,7 @@ class UserInterface(QtWidgets.QMainWindow):
 
     @Slot()
     def find_isotopes(self):
+        """Function for matching the peaks with the isotope catalog."""
         try:
             mf = MatchFeatures(
                 data_peaks=self.fit_peaks_x, catalog_data=self.isotope_catalog
@@ -568,6 +608,7 @@ class UserInterface(QtWidgets.QMainWindow):
 
     @Slot()
     def apply_calibration(self):
+        """Function for applying the calibration to selected files. Saves the calibrated files in the same directory as the original files."""
         file_paths, _ = QtWidgets.QFileDialog.getOpenFileNames(
             filter="CSV files (*.csv)"
         )

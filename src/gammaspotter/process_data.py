@@ -10,6 +10,7 @@ from gammaspotter.fit_models import FitModels
 
 class ProcessData:
     def __init__(self, data: pd.DataFrame) -> None:
+        """Class for processing the raw data from the gamma detector from the PicoScope."""
         # remove last four rows of data to remove edge effect from out of range binning
         self.data = data[:-4]
 
