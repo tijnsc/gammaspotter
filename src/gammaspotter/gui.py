@@ -449,7 +449,7 @@ class UserInterface(QtWidgets.QMainWindow):
                         self.plot_vlines_cal(self.fitted_calibration_peaks["energy"])
                         if len(self.fitted_calibration_peaks) == 2:
                             self.calibration_log.append(
-                                f"Selected peaks:\n{self.fitted_calibration_peaks.to_markdown(index=False, tablefmt='plain', headers=['Energy [mV]', 'Std Err [mV]'])}\n"
+                                f"Selected peaks:\n{self.fitted_calibration_peaks.to_markdown(index=False, tablefmt='plain', headers=['Energy [mV]', 'Energy Std [mV]'])}\n"
                             )
             else:
                 self.calibration_log.append(
@@ -555,7 +555,7 @@ class UserInterface(QtWidgets.QMainWindow):
                 self.fit_peaks_x.insert(0, "peak", range(1, peak_count + 1))
 
                 self.analysis_log.append(
-                    f"FITTED {peak_count} PEAKS:\n{self.fit_peaks_x.to_markdown(index=False, tablefmt='plain', headers=['Peak', 'Energy [keV]', 'Std Err [keV]'])}\n"
+                    f"FITTED {peak_count} PEAKS:\n{self.fit_peaks_x.to_markdown(index=False, tablefmt='plain', headers=['Peak', 'Energy [keV]', 'Energy Std [keV]'])}\n"
                 )
 
     @Slot()
@@ -582,7 +582,7 @@ class UserInterface(QtWidgets.QMainWindow):
                 ]
                 if len(peak_matches) > 0:
                     self.analysis_log.append(
-                        f"--- Peak {peak_nr} matches with: ---\n{peak_matches.to_markdown(index=False, tablefmt='plain', headers=['Isotope', '% Match', 'Energy [keV]'])}"
+                        f"--- Peak {peak_nr} matches with: ---\n{peak_matches.to_markdown(index=False, tablefmt='plain', headers=['Isotope', 'Certainty [%]', 'Energy [keV]'])}"
                     )
                 else:
                     self.analysis_log.append(f"--- Peak {peak_nr} has no matches. ---")
