@@ -4,11 +4,13 @@ Package for finding and identifying radioactive sources. The goal is to make it 
 
 ---
 
-**[Features](#features)** - **[Installation](#installation)** - **[Quick usage](#quick-usage)**
+**[Features](#features)** - **[Installation](#installation)**
 
 ![gammaspotter_window](https://github.com/tijnsc/gammaspotter/blob/6efafd18579828d9297bbd78ad521452c05ba6d9/docs/img/gammaspotter_window.png)
 
 ## Features
+
+- **Measurement Calibration** The calibrate tab lets the user calibrate a gamma spectrum by comparing known energies to peak energies.
 
 - **Data Visualization:** The analyze tab offers an interactive visualization to help you gain insights into your data.
 
@@ -40,15 +42,4 @@ To install the "gammaspotter" package, you can use [Poetry](https://python-poetr
     poetry install
     ```
 
-4. Finally, you can start using the package by running it:
-
-    ```bash
-    gammaspotter
-    ```
-
-    That's it! You have successfully installed the `gammaspotter` package using Poetry.
-
-
-## Quick usage
-
-See the [usage](https://tijnsc.github.io/gammaspotter/usage) section of the docs for more examples!
+4. Finally, you can start using the package by running `gammaspotter`.
