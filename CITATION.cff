@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Schuitevoerder"
+  given-names: "Tijn"
+- family-names: "Telleman"
+  given-names: "Dylan"
+title: "gammaspotter"
+date-released: 2023-12-11
+url: "https://github.com/tijnsc/gammaspotter/"
