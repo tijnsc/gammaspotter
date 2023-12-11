@@ -32,7 +32,7 @@ class MatchFeatures:
                 std_meas = found_isotope[2]
 
                 z_score = (measured_energy - literature_energy) / std_meas
-                percentage_match = self.sigma_changer(abs(z_score))
+                percentage_match = self.erfc_pecentage(abs(z_score))
 
                 if percentage_match > 0:
                     output_list.append(
@@ -54,13 +54,13 @@ class MatchFeatures:
 
         return sorted_df
 
-    def sigma_changer(self, z_score):
-        """Function fo changing the sigma in to a percentage.
+    def erfc_pecentage(self, z_score):
+        """Function for calculating the percentage match between the measured and literature energy.
 
         Args:
             z_score (float): The z_score of the measured data compared to the literature value.
 
         Returns:
-            float: Percentage of the given sigma.
+            float: The percentage match between the measured and literature energy.
         """
         return round(erfc(z_score / sqrt(2)) * 100, 2)
