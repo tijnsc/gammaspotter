@@ -32,28 +32,28 @@ class MatchFeatures:
                 std_meas = found_isotope[2]
 
                 z_score = (measured_energy - literature_energy) / std_meas
-                # percentage_match = self.sigma_changer(abs(z_score))
+                percentage_match = self.sigma_changer(abs(z_score))
 
-                output_list.append(
-                    [
-                        peak_nr,
-                        literature_isotope,
-                        abs(z_score),
-                        literature_energy,
-                    ]
-                )
+                if percentage_match > 0:
+                    output_list.append(
+                        [
+                            peak_nr,
+                            literature_isotope,
+                            percentage_match,
+                            literature_energy,
+                        ]
+                    )
             peak_nr += 1
 
         output_df = pd.DataFrame(
-            output_list, columns=["Peak Number", "Isotope", "Z-score", "Energy"]
+            output_list, columns=["Peak Number", "Isotope", "Percentage", "Energy"]
         )
         sorted_df = output_df.sort_values(
-            by=["Peak Number", "Z-score"], ascending=[True, True]
+            by=["Peak Number", "Percentage"], ascending=[True, False]
         )
 
         return sorted_df
 
-    # currently unused function
     def sigma_changer(self, z_score):
         """Function fo changing the sigma in to a percentage.
 

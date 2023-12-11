@@ -582,7 +582,7 @@ class UserInterface(QtWidgets.QMainWindow):
                 ]
                 if len(peak_matches) > 0:
                     self.analysis_log.append(
-                        f"--- Peak {peak_nr} matches with: ---\n{peak_matches.to_markdown(index=False, tablefmt='plain', headers=['Isotope', 'Abs Z-score', 'Energy [keV]'])}"
+                        f"--- Peak {peak_nr} matches with: ---\n{peak_matches.to_markdown(index=False, tablefmt='plain', headers=['Isotope', '% Match', 'Energy [keV]'])}"
                     )
                 else:
                     self.analysis_log.append(f"--- Peak {peak_nr} has no matches. ---")

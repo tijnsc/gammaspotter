@@ -96,11 +96,11 @@ class ProcessData:
 
             # extract fitted parameters
             amp, cen, wid, startheight = popt
-            fit_errors = np.sqrt(np.diag(pcov))
+            # fit_errors = np.sqrt(np.diag(pcov))
 
             # get the energy and standard error
             energy_of_peak = cen
-            standard_error = fit_errors[1]
+            standard_error = wid
 
             x_positions.append(energy_of_peak)
             x_positions_std.append(standard_error)
