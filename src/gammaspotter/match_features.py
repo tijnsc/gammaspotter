@@ -63,4 +63,4 @@ class MatchFeatures:
         Returns:
             float: Percentage of the given sigma.
         """
-        return round(erfc(z_score / 5 * sqrt(2)) * 100, 2)
+        return round(erfc(z_score / sqrt(2)) * 100, 2)
