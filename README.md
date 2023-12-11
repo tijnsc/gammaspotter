@@ -6,13 +6,13 @@ Package for finding and identifying radioactive sources. The goal is to make it 
 
 **[Features](#features)** - **[Installation](#installation)** - **[Quick usage](#quick-usage)**
 
-![gammaspotter_window](https://github.com/tijnsc/gammaspotter/assets/26672538/3bdf087d-55eb-43d6-ab21-aefc452a8c21)
+![gammaspotter_window](https://github.com/tijnsc/gammaspotter/blob/6efafd18579828d9297bbd78ad521452c05ba6d9/docs/img/gammaspotter_window.png)
 
 ## Features
 
 - **Data Visualization:** The analyze tab offers an interactive visualization to help you gain insights into your data.
 
-- **Statistical Analysis:** You can perform statistical analysis on your calibrated data using built-in functions and algorithms. This includes [`peak detection`][gammaspotter.process_data.ProcessData.find_gamma_peaks], [`peak fitting`][gammaspotter.process_data.ProcessData.fit_peaks] and [`isotope match detection`][gammaspotter.match_features.MatchFeatures.match_isotopes].
+- **Statistical Analysis:** You can perform statistical analysis on your calibrated data using built-in functions and algorithms. This includes peak detection, peak fitting and isotope match detection.
 
 - **Report Generation:** Once you have completed your analysis, the analyze tab enables you to generate reports summarizing your findings. You can access visualizations and statistical results.
 
