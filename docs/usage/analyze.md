@@ -21,7 +21,7 @@ There are two checkboxes that can be selected. These will change the plot visibl
 - **Show Fitted Peaks:** Selecting this box will show the fitted peaks on the plot with a yellow line.
 
 ### Matching Isotopes
-This button will search through the catalog and compare the values of the found energy with the literature value. The isotopes will be sorted by percentage and displayed on the right in the `Analysis Log`.
+This button will search through the catalog and compare the values of the found energy with the literature value. The isotopes will be sorted by percentage and displayed on the right in the 'Analysis Log'.
 
 ### Loading Catalog
 If you want to use another catalog, locate the `Load alternative catalog` button. This will allow you to insert a .csv file as a catalog for finding the isotopes.
