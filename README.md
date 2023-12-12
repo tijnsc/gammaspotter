@@ -1,6 +1,8 @@
 # gammaspotter
+[![documentation](https://img.shields.io/badge/docs-mkdocs%20material-blue.svg?style=flat)](https://tijnsc.github.io/gammaspotter/)
+[![pypi version](https://img.shields.io/pypi/v/gammaspotter.svg)](https://pypi.org/project/gammaspotter/)
 
-Package for finding and identifying radioactive sources. The goal is to make it easier to find radioactive sources from a gamma spectrum. With only a dataset of the a spectrum and a catalog of possible sources gammaspotter can identify possible sources in the provided spectrum.
+The [gammaspotter](https://github.com/tijnsc/gammaspotter/) application is designed to identify radioactive sources in gamma spectra.
 
 ---
 
