@@ -28,6 +28,6 @@ You can easily install `gammaspotter` using `pip`. First, ensure you have Python
 pip install gammaspotter
 ```
 
-This command will download and install the latest version of gammaspotter from PyPI.
+This command will download and install the latest version of gammaspotter from [PyPI](https://pypi.org/).
 
 You can now start the application by running the `gammaspotter` command in a terminal.
