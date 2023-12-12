@@ -1,6 +1,7 @@
 import sys
 
 from PySide6 import QtWidgets
+from importlib import resources as impresources
 from PySide6.QtWebEngineWidgets import QWebEngineView
 import pyqtgraph as pg
 import pandas as pd
@@ -23,8 +24,9 @@ class UserInterface(QtWidgets.QMainWindow):
         super().__init__()
 
         # load default isotope catalog
-        file_path = Path(__file__).resolve()
-        catalog_path = file_path.parents[2] / "catalogs" / "gamma-energies-common.csv"
+        catalog_path = impresources.path(
+            "gammaspotter.catalogs", "gamma-energies-common.csv"
+        )
 
         self.isotope_catalog = pd.read_csv(catalog_path)
         self.catalog_name = catalog_path.name
