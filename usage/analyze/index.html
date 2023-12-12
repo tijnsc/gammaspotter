@@ -502,6 +502,51 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#showing-plot" class="md-nav__link">
+    <span class="md-ellipsis">
+      Showing Plot
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#matching-isotopes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Matching Isotopes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loading-catalog" class="md-nav__link">
+    <span class="md-ellipsis">
+      Loading Catalog
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#result-peaks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Result Peaks
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#analysis-log" class="md-nav__link">
+    <span class="md-ellipsis">
+      Analysis Log
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -556,7 +601,7 @@
 
 <h1 id="analysis">Analysis<a class="headerlink" href="#analysis" title="Permanent link">&para;</a></h1>
 <h3 id="selecting-a-measurement">Selecting a Measurement<a class="headerlink" href="#selecting-a-measurement" title="Permanent link">&para;</a></h3>
-<p>On the application interface, locate the <a class="autorefs autorefs-internal" href="../../reference/views/#gammaspotter.gui.UserInterface.open_file"><code>Open Measurement</code></a> button, typically situated on the right-hand side. This button serves as the entry point for choosing the measurement you wish to analyze. Click on this button to browse and select the specific measurement file you intend to use for analysis.</p>
+<p>On the application interface, locate the <code>Open Measurement</code> button, typically situated on the right-hand side. This button serves as the entry point for choosing the measurement you wish to analyze. Click on this button to browse and select the specific measurement file you intend to use for analysis.</p>
 <h3 id="configuring-peak-detection-threshold">Configuring Peak Detection Threshold<a class="headerlink" href="#configuring-peak-detection-threshold" title="Permanent link">&para;</a></h3>
 <p>Directly below the <code>Open Measurement</code> button, you'll find a customizable box labeled <code>Peak Detection Threshold</code>. This parameter controls the sensitivity of the program when identifying peaks within the spectrum.</p>
 <ul>
@@ -568,6 +613,20 @@
 <ul>
 <li><strong>Width Customization:</strong> Increase or decrease the width to fine-tune the fitting range around identified peaks in the spectrum.</li>
 </ul>
+<h3 id="showing-plot">Showing Plot<a class="headerlink" href="#showing-plot" title="Permanent link">&para;</a></h3>
+<p>There are two checkboxes that can be selected. These will change the plot visible on the left side.</p>
+<ul>
+<li><strong>Show Detected Peaks:</strong> This will display the peaks detected by the program on the plot.</li>
+<li><strong>Show Fitted Peaks:</strong> Selecting this box will show the fitted peaks on the plot with a yellow line.</li>
+</ul>
+<h3 id="matching-isotopes">Matching Isotopes<a class="headerlink" href="#matching-isotopes" title="Permanent link">&para;</a></h3>
+<p>This button will search through the catalog and compare the values of the found energy with the literature value. The isotopes will be sorted by percentage and displayed on the right in the 'Analysis Log'.</p>
+<h3 id="loading-catalog">Loading Catalog<a class="headerlink" href="#loading-catalog" title="Permanent link">&para;</a></h3>
+<p>If you want to use another catalog, locate the <code>Load alternative catalog</code> button. This will allow you to insert a .csv file as a catalog for finding the isotopes.</p>
+<h3 id="result-peaks">Result Peaks<a class="headerlink" href="#result-peaks" title="Permanent link">&para;</a></h3>
+<p>Changing the <code>Max. results per peak</code> scroll box will alter the number of matches shown. The isotopes are sorted by percentage, and if more matches are desired, this can be achieved by increasing the number.</p>
+<h3 id="analysis-log">Analysis Log<a class="headerlink" href="#analysis-log" title="Permanent link">&para;</a></h3>
+<p>The textbox on the right side under the buttons is a 'read-only' text box. All the information will be displayed here.</p>
 
 
 

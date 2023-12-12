@@ -389,9 +389,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#gammaspotter.process_data.ProcessData.apply_calibration" class="md-nav__link">
+  <a href="#gammaspotter.process_data.ProcessData.apply_cal_to_data" class="md-nav__link">
     <span class="md-ellipsis">
-      apply_calibration()
+      apply_cal_to_data()
     </span>
   </a>
   
@@ -461,18 +461,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#gammaspotter.match_features.MatchFeatures.match_isotopes" class="md-nav__link">
+  <a href="#gammaspotter.match_features.MatchFeatures.erfc_pecentage" class="md-nav__link">
     <span class="md-ellipsis">
-      match_isotopes()
+      erfc_pecentage()
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#gammaspotter.match_features.MatchFeatures.sigma_changer" class="md-nav__link">
+  <a href="#gammaspotter.match_features.MatchFeatures.match_isotopes" class="md-nav__link">
     <span class="md-ellipsis">
-      sigma_changer()
+      match_isotopes()
     </span>
   </a>
   
@@ -897,11 +897,11 @@
 
             <span class="c1"># extract fitted parameters</span>
             <span class="n">amp</span><span class="p">,</span> <span class="n">cen</span><span class="p">,</span> <span class="n">wid</span><span class="p">,</span> <span class="n">startheight</span> <span class="o">=</span> <span class="n">popt</span>
-            <span class="n">fit_errors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">pcov</span><span class="p">))</span>
+            <span class="c1"># fit_errors = np.sqrt(np.diag(pcov))</span>
 
             <span class="c1"># get the energy and standard error</span>
             <span class="n">energy_of_peak</span> <span class="o">=</span> <span class="n">cen</span>
-            <span class="n">standard_error</span> <span class="o">=</span> <span class="n">fit_errors</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">standard_error</span> <span class="o">=</span> <span class="n">wid</span>
 
             <span class="n">x_positions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">energy_of_peak</span><span class="p">)</span>
             <span class="n">x_positions_std</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">standard_error</span><span class="p">)</span>
@@ -948,10 +948,10 @@
 
         <span class="k">return</span> <span class="n">scaling_factor</span><span class="p">,</span> <span class="n">horizontal_offset</span>
 
-    <span class="k">def</span> <span class="nf">apply_calibration</span><span class="p">(</span>
+    <span class="k">def</span> <span class="nf">apply_cal_to_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">scaling_factor</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">horizontal_offset</span><span class="p">:</span> <span class="nb">float</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Applies the calibration to the data.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Function for applying the calibration to the data.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            data (pd.DataFrame): the data that needs to be calibrated</span>
@@ -1016,15 +1016,15 @@
 
 
 
-<h2 id="gammaspotter.process_data.ProcessData.apply_calibration" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">apply_calibration</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">scaling_factor</span><span class="p">,</span> <span class="n">horizontal_offset</span><span class="p">)</span></code>
+<h2 id="gammaspotter.process_data.ProcessData.apply_cal_to_data" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">apply_cal_to_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">scaling_factor</span><span class="p">,</span> <span class="n">horizontal_offset</span><span class="p">)</span></code>
 
-<a href="#gammaspotter.process_data.ProcessData.apply_calibration" class="headerlink" title="Permanent link">&para;</a></h2>
+<a href="#gammaspotter.process_data.ProcessData.apply_cal_to_data" class="headerlink" title="Permanent link">&para;</a></h2>
 
 
   <div class="doc doc-contents ">
   
-      <p>Applies the calibration to the data.</p>
+      <p>Function for applying the calibration to the data.</p>
 
 
 
@@ -1124,10 +1124,10 @@
 <span class="normal">162</span>
 <span class="normal">163</span>
 <span class="normal">164</span>
-<span class="normal">165</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">apply_calibration</span><span class="p">(</span>
+<span class="normal">165</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">apply_cal_to_data</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">scaling_factor</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">horizontal_offset</span><span class="p">:</span> <span class="nb">float</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Applies the calibration to the data.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function for applying the calibration to the data.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        data (pd.DataFrame): the data that needs to be calibrated</span>
@@ -1579,11 +1579,11 @@ This function returns more accurate peak positions than 'find_gamma_peaks'.</p>
 
         <span class="c1"># extract fitted parameters</span>
         <span class="n">amp</span><span class="p">,</span> <span class="n">cen</span><span class="p">,</span> <span class="n">wid</span><span class="p">,</span> <span class="n">startheight</span> <span class="o">=</span> <span class="n">popt</span>
-        <span class="n">fit_errors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">pcov</span><span class="p">))</span>
+        <span class="c1"># fit_errors = np.sqrt(np.diag(pcov))</span>
 
         <span class="c1"># get the energy and standard error</span>
         <span class="n">energy_of_peak</span> <span class="o">=</span> <span class="n">cen</span>
-        <span class="n">standard_error</span> <span class="o">=</span> <span class="n">fit_errors</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">standard_error</span> <span class="o">=</span> <span class="n">wid</span>
 
         <span class="n">x_positions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">energy_of_peak</span><span class="p">)</span>
         <span class="n">x_positions_std</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">standard_error</span><span class="p">)</span>
@@ -1847,38 +1847,38 @@ This function returns more accurate peak positions than 'find_gamma_peaks'.</p>
                 <span class="n">std_meas</span> <span class="o">=</span> <span class="n">found_isotope</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
 
                 <span class="n">z_score</span> <span class="o">=</span> <span class="p">(</span><span class="n">measured_energy</span> <span class="o">-</span> <span class="n">literature_energy</span><span class="p">)</span> <span class="o">/</span> <span class="n">std_meas</span>
-                <span class="c1"># percentage_match = self.sigma_changer(abs(z_score))</span>
+                <span class="n">percentage_match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">erfc_pecentage</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">z_score</span><span class="p">))</span>
 
-                <span class="n">output_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="p">[</span>
-                        <span class="n">peak_nr</span><span class="p">,</span>
-                        <span class="n">literature_isotope</span><span class="p">,</span>
-                        <span class="nb">abs</span><span class="p">(</span><span class="n">z_score</span><span class="p">),</span>
-                        <span class="n">literature_energy</span><span class="p">,</span>
-                    <span class="p">]</span>
-                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">percentage_match</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">output_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="p">[</span>
+                            <span class="n">peak_nr</span><span class="p">,</span>
+                            <span class="n">literature_isotope</span><span class="p">,</span>
+                            <span class="n">percentage_match</span><span class="p">,</span>
+                            <span class="n">literature_energy</span><span class="p">,</span>
+                        <span class="p">]</span>
+                    <span class="p">)</span>
             <span class="n">peak_nr</span> <span class="o">+=</span> <span class="mi">1</span>
 
         <span class="n">output_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-            <span class="n">output_list</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Peak Number&quot;</span><span class="p">,</span> <span class="s2">&quot;Isotope&quot;</span><span class="p">,</span> <span class="s2">&quot;Z-score&quot;</span><span class="p">,</span> <span class="s2">&quot;Energy&quot;</span><span class="p">]</span>
+            <span class="n">output_list</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Peak Number&quot;</span><span class="p">,</span> <span class="s2">&quot;Isotope&quot;</span><span class="p">,</span> <span class="s2">&quot;Percentage&quot;</span><span class="p">,</span> <span class="s2">&quot;Energy&quot;</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="n">sorted_df</span> <span class="o">=</span> <span class="n">output_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span>
-            <span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Peak Number&quot;</span><span class="p">,</span> <span class="s2">&quot;Z-score&quot;</span><span class="p">],</span> <span class="n">ascending</span><span class="o">=</span><span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">]</span>
+            <span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Peak Number&quot;</span><span class="p">,</span> <span class="s2">&quot;Percentage&quot;</span><span class="p">],</span> <span class="n">ascending</span><span class="o">=</span><span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">sorted_df</span>
 
-    <span class="c1"># currently unused function</span>
-    <span class="k">def</span> <span class="nf">sigma_changer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z_score</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Function fo changing the sigma in to a percentage.</span>
+    <span class="k">def</span> <span class="nf">erfc_pecentage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z_score</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Function for calculating the percentage match between the measured and literature energy.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            z_score (float): The z_score of the measured data compared to the literature value.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            float: Percentage of the given sigma.</span>
+<span class="sd">            float: The percentage match between the measured and literature energy.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">erfc</span><span class="p">(</span><span class="n">z_score</span> <span class="o">/</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">erfc</span><span class="p">(</span><span class="n">z_score</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
 
@@ -1985,6 +1985,102 @@ This function returns more accurate peak positions than 'find_gamma_peaks'.</p>
 
 
 
+<h2 id="gammaspotter.match_features.MatchFeatures.erfc_pecentage" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">erfc_pecentage</span><span class="p">(</span><span class="n">z_score</span><span class="p">)</span></code>
+
+<a href="#gammaspotter.match_features.MatchFeatures.erfc_pecentage" class="headerlink" title="Permanent link">&para;</a></h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Function for calculating the percentage match between the measured and literature energy.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>z_score</code></td>
+          <td>
+                <code>float</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The z_score of the measured data compared to the literature value.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>float</code></td>          <td>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The percentage match between the measured and literature energy.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+          <details class="quote">
+            <summary>Source code in <code>src\gammaspotter\match_features.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">erfc_pecentage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z_score</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function for calculating the percentage match between the measured and literature energy.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        z_score (float): The z_score of the measured data compared to the literature value.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float: The percentage match between the measured and literature energy.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">erfc</span><span class="p">(</span><span class="n">z_score</span> <span class="o">/</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
 <h2 id="gammaspotter.match_features.MatchFeatures.match_isotopes" class="doc doc-heading">
           <code class="highlight language-python"><span class="n">match_isotopes</span><span class="p">()</span></code>
 
@@ -2058,7 +2154,8 @@ This function returns more accurate peak positions than 'find_gamma_peaks'.</p>
 <span class="normal">51</span>
 <span class="normal">52</span>
 <span class="normal">53</span>
-<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">match_isotopes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="normal">54</span>
+<span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">match_isotopes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Function for matching the found gamma peaks with the literature energies.</span>
 
 <span class="sd">    Returns:</span>
@@ -2076,122 +2173,27 @@ This function returns more accurate peak positions than 'find_gamma_peaks'.</p>
             <span class="n">std_meas</span> <span class="o">=</span> <span class="n">found_isotope</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
 
             <span class="n">z_score</span> <span class="o">=</span> <span class="p">(</span><span class="n">measured_energy</span> <span class="o">-</span> <span class="n">literature_energy</span><span class="p">)</span> <span class="o">/</span> <span class="n">std_meas</span>
-            <span class="c1"># percentage_match = self.sigma_changer(abs(z_score))</span>
+            <span class="n">percentage_match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">erfc_pecentage</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">z_score</span><span class="p">))</span>
 
-            <span class="n">output_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="p">[</span>
-                    <span class="n">peak_nr</span><span class="p">,</span>
-                    <span class="n">literature_isotope</span><span class="p">,</span>
-                    <span class="nb">abs</span><span class="p">(</span><span class="n">z_score</span><span class="p">),</span>
-                    <span class="n">literature_energy</span><span class="p">,</span>
-                <span class="p">]</span>
-            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">percentage_match</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">output_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">[</span>
+                        <span class="n">peak_nr</span><span class="p">,</span>
+                        <span class="n">literature_isotope</span><span class="p">,</span>
+                        <span class="n">percentage_match</span><span class="p">,</span>
+                        <span class="n">literature_energy</span><span class="p">,</span>
+                    <span class="p">]</span>
+                <span class="p">)</span>
         <span class="n">peak_nr</span> <span class="o">+=</span> <span class="mi">1</span>
 
     <span class="n">output_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-        <span class="n">output_list</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Peak Number&quot;</span><span class="p">,</span> <span class="s2">&quot;Isotope&quot;</span><span class="p">,</span> <span class="s2">&quot;Z-score&quot;</span><span class="p">,</span> <span class="s2">&quot;Energy&quot;</span><span class="p">]</span>
+        <span class="n">output_list</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Peak Number&quot;</span><span class="p">,</span> <span class="s2">&quot;Isotope&quot;</span><span class="p">,</span> <span class="s2">&quot;Percentage&quot;</span><span class="p">,</span> <span class="s2">&quot;Energy&quot;</span><span class="p">]</span>
     <span class="p">)</span>
     <span class="n">sorted_df</span> <span class="o">=</span> <span class="n">output_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span>
-        <span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Peak Number&quot;</span><span class="p">,</span> <span class="s2">&quot;Z-score&quot;</span><span class="p">],</span> <span class="n">ascending</span><span class="o">=</span><span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">]</span>
+        <span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Peak Number&quot;</span><span class="p">,</span> <span class="s2">&quot;Percentage&quot;</span><span class="p">],</span> <span class="n">ascending</span><span class="o">=</span><span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
     <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">sorted_df</span>
-</code></pre></div></td></tr></table></div>
-          </details>
-  </div>
-
-</div>
-
-
-<div class="doc doc-object doc-function">
-
-
-
-
-<h2 id="gammaspotter.match_features.MatchFeatures.sigma_changer" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">sigma_changer</span><span class="p">(</span><span class="n">z_score</span><span class="p">)</span></code>
-
-<a href="#gammaspotter.match_features.MatchFeatures.sigma_changer" class="headerlink" title="Permanent link">&para;</a></h2>
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Function fo changing the sigma in to a percentage.</p>
-
-
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td><code>z_score</code></td>
-          <td>
-                <code>float</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The z_score of the measured data compared to the literature value.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-<th>Name</th>        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-<td><code>float</code></td>          <td>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Percentage of the given sigma.</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-          <details class="quote">
-            <summary>Source code in <code>src\gammaspotter\match_features.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">sigma_changer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z_score</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function fo changing the sigma in to a percentage.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        z_score (float): The z_score of the measured data compared to the literature value.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        float: Percentage of the given sigma.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">erfc</span><span class="p">(</span><span class="n">z_score</span> <span class="o">/</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
           </details>
   </div>
