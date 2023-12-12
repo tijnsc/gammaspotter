@@ -16,7 +16,6 @@ pathlib = "^1.0.1"
 pyside6 = "^6.6.1"
 pyqtgraph = "^0.13.3"
 
-
 [tool.poetry.group.dev.dependencies]
 mkdocs = "^1.5.3"
 mkdocs-material = "^9.5.1"
@@ -28,5 +27,4 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-# gammaspotter = "gammaspotter.cli:cmd_group"
 gammaspotter = "gammaspotter.gui:main"
