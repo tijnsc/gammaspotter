@@ -22,26 +22,12 @@ The [gammaspotter](https://github.com/tijnsc/gammaspotter/) application is desig
 
 ## Installation
 
-To install the "gammaspotter" package, you can use [Poetry](https://python-poetry.org/), a dependency management and packaging tool for Python.
+You can easily install `gammaspotter` using `pip`. First, ensure you have Python and pip installed. Then, open a terminal or command prompt and execute the following command:
 
-1. First, make sure you have Poetry installed on your system. If not, you can install it by following the [official Poetry installation guide](https://python-poetry.org/docs/#installation).
+```bash
+pip install gammaspotter
+```
 
-2. Clone the repository from GitHub:
+This command will download and install the latest version of `gammaspotter` from PyPI.
 
-    ```bash
-    git clone https://github.com/tijnsc/gammaspotter.git
-    ```
-
-    When the repository has been downloaded, navigate into it:
-
-    ```bash 
-    cd gammaspotter
-    ```
-
-3. Install the package:
-
-    ```bash
-    poetry install
-    ```
-
-4. Finally, you can start using the package by running `gammaspotter`.
+You can now start the application by running the `gammaspotter` command in a terminal.
