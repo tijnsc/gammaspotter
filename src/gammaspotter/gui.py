@@ -322,6 +322,10 @@ class UserInterface(QtWidgets.QMainWindow):
             self.show_analysis_funcs(False)
             self.plot_widget_analyze.clear()
             self.plot_widget_analyze.setTitle("")
+        try:
+            del self.fit_peaks_x
+        except:
+            pass
 
     @Slot()
     def clear_calibration_data(self):
