@@ -1,1 +1,0 @@
-:::gammaspotter.gui.UserInterface
